@@ -10,3 +10,6 @@ Email: kraisler (at) uw (dot) edu
 
 My areas of work are:
 Control theory, Riemannian geometry, consensus algorithms, Lie groups
+
+## Links
+[About me](./about/)
