@@ -12,4 +12,4 @@ My areas of work are:
 Control theory, Riemannian geometry, consensus algorithms, Lie groups
 
 ## Links
-[About me](http://spencerkraisler.github.io/about)
+[Publications](http://spencerkraisler.github.io/publications)
