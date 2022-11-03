@@ -16,3 +16,5 @@ I am a 2nd year Aerospace PhD student at the University of Washington. My adviso
 
 [Publications](http://spencerkraisler.github.io/publications)
 
+[Posts](http://spencerkraisler.github.io/posts)
+
