@@ -25,6 +25,7 @@ As a small side project, I'm writing a Python library for Lie group computations
 I placed 3rd in UW's A&A Research Showcase 2022. Here, A&A PhD students give 3 minute presentations of their recent research. [Here](https://youtu.be/H1MZtewFQK8?t=2563) is the link to my presentation. 
 
 ## Publications
-**Consensus on Lie groups with Application to Distributed Pose Estimation (unpublished)**
+
+### Consensus on Lie groups with Application to Distributed Pose Estimation (unpublished)**
 I am currently writing a paper for CDC 2023. In this paper, I present a novel distributed consensus algorithm for all Lie groups with a seemingly linear convergence rate and provide a proof of convergence. Unlike other distributed consensus algorithms for Lie groups where authors only show local convergence is guaranteed, I provide a proof that shows convergence is garanteed if agents are initialized within a geodesically convex post.
 
