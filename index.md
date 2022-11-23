@@ -7,9 +7,11 @@ Department of Aeronautics and Astronautics
 Seattle, WA 98195
 
 Email: kraisler (at) uw (dot) edu
+[linkedin](https://www.linkedin.com/in/spencer-kraisler-250494149/)
+[github](https://github.com/spencerkraisler)
 
 ## About me
-I am a 2nd year Aerospace PhD student at the University of Washington. My advisor is Dr. Mehran Mesbahi. I find geometric control theory and distributed control very exciting. In particular, I study distributed consensus algorithms on Lie groups, and other applications of Lie groups to controls. I am also a 2nd degree black belt in shotokan karate and I enjoy playing Go! 
+I am a 2nd year Aerospace PhD student at the University of Washington. My advisor is Dr. Mehran Mesbahi and I am member of the Robotics, Aerospace and Information Networks (RAIN) lab! I find geometric control theory and distributed control very exciting. In particular, I study distributed consensus algorithms on Lie groups, and other applications of Lie groups to controls. For hobbies, I am 2nd degree black belt in shotokan karate and I enjoy playing Go! 
 
 ## Projects
 ### Distributed Consensus on Lie groups
@@ -28,4 +30,3 @@ I placed 3rd in UW's A&A Research Showcase 2022. Here, A&A PhD students give 3 m
 
 ### Consensus on Lie groups with Application to Distributed Pose Estimation (unpublished)**
 I am currently writing a paper for CDC 2023. In this paper, I present a novel distributed consensus algorithm for all Lie groups with a seemingly linear convergence rate and provide a proof of convergence. Unlike other distributed consensus algorithms for Lie groups where authors only show local convergence is guaranteed, I provide a proof that shows convergence is garanteed if agents are initialized within a geodesically convex post.
-
