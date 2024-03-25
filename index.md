@@ -11,17 +11,17 @@ Email: kraisler (at) uw (dot) edu
 [github](https://github.com/spencerkraisler)
 
 ## About me
-I am a 3rd year Aerospace PhD student at the University of Washington. My advisor is Prof. Mehran Mesbahi, and I am member of the Robotics, Aerospace and Information Networks (RAIN) lab! I enjoy studying applications of Riemannian geometry to controls, as well as consensus algorithms and distributed computing. For hobbies, I am 2nd degree black belt in shotokan karate and I enjoy playing Go! 
+I am a 3rd year Aerospace PhD student at the University of Washington. My advisor is Prof. Mehran Mesbahi, and I am member of the Robotics, Aerospace and Information Networks (RAIN) lab! I enjoy studying applications of Riemannian geometry to controls, as well as consensus algorithms and distributed computing. Outside of work, my wife and I enjoy finding new restaurants to try out and attending music venues. For hobbies, I am 2nd degree black belt in shotokan karate and I enjoy playing Go! 
 
 ## Projects
+### Direct Policy Optimization for LQG and More
+I am studying data-driven methods for LQG. I recently submitted a paper (in review) to L-CSS + CDC on this topic, and I am planning to write another journal paper.
+
 ### Distributed Consensus on Lie groups
-As of now, my PhD thesis will revolve around consensus algorithms on non-linear spaces, a topic I am deeply fond of. I am currently writing two (hopefully!) papers for CDC 2023.
+I wrote 2 1st author papers relating to consensus algorithms on non-Euclidean state spaces. 
 
 ### Manopt contributions
 I contributed a small amount of code to the [Manopt library](https://github.com/NicolasBoumal/manopt). Manopt is a Matlab toolbox for optimization on manifolds I use pretty often. I added a method that returns the Lie identity for Lie groups, and used [Rodrigues' rotation formula](https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula) for optimize the exp() and log() operators for SO(3).
-
-### PyLieGroup
-As a small side project, I'm writing a Python library for Lie group computations. I'm taking an object-oriented approach to this so users can easily swap "parameterizations" without changing any code about their Lie group or algorithm. I have no idea how user-friendly it'll be, but it's a lot of fun to work on. :) I hope to finish this soon but busy with school.
 
 ## Publications
 
@@ -30,7 +30,6 @@ Direct policy optimization (PO) synthesizes controllers by formalizing constrain
 
 ### Centralized and Distributed Strategies for Handover-Aware Task Allocation in Satellite Constellations (Journal of Guidance, Control, and Dynamics 2024, in review)
 As satellite constellations grow in size, there is an increasing need for autonomous, scalable, and real-time dynamic task assignment to address the unique operational challenges of such distributed systems. In particular, a time-varying task assignment (i.e., for observing various regions of Earth) often means that the corresponding satellite has to re-orient itself or its sensors, costing time and energy. However, most assignment algorithms for area requests proposed in the literature do not account for the significant cost associated with task handover in satellite constellations. In this paper, we develop a framework for solving the seemingly NP-hard problem of optimal dynamic task allocation while minimizing task handover. In particular, we develop Handover-Aware Assignment with Lookahead (HAAL), an algorithm with centralized and distributed variants, and solutions that provably achieve 50% of the optimal value. We then proceed to show that HAAL significantly outperforms similar heuristic methods proposed in the literature for realistic constellation experiments with up to a thousand satellites. The algorithm scales polynomially in the number of satellites/tasks and offers a smooth trade-off between computational efficiency and performance, allowing the designer to tune the algorithm based on available computing resources, communication bandwidth, and required performance.
-
 
 ### Consensus on Lie groups for the Riemannian Center of Mass (CDC 2023, 1st author)
 The configuration space of nearly any mechanical robot is not a vector space, but a non-Euclidean space known as a Lie group. Lie groups provide a wealth of fascinating properties that are shared with vector spaces. Average consensus theory is the study of computing averages of points in a distributed manner, and has applications to any distributed network of systems such as social networks, MRIs, machine learning, and satellite constellations. However, this theory has historically been focused on vector spaces. In this paper, we present a novel way to compute the average of a set of points on a Lie group in a distributed manner. For non-Euclidean spaces, the generalization of an average is known as the Riemannian center of mass (RCM). This has many applications wherever one one wishes to estimate the state of a mechanical robot in a distributed manner. For example, consider a swarm of camera-equipped satellites estimating the orientation of a space debris object. We show that if the algorithm achieves consensus, then the consensus point is neccessarily at the RCM. We also emprically show a linear rate of convergence. 
