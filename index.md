@@ -12,9 +12,9 @@ Email: kraisler (at) uw (dot) edu
 
 [github](https://github.com/spencerkraisler)
 
-[resume](https://username.github.io/folder/document.pdf)
+[resume](https://spencerkraisler.github.io/resume.pdf)
 
-## about me
+## About me
 Hi! I am a 4th year PhD student at the University of Washington. I work at the Robotics, Aerospace and Information Networks (RAIN) lab inside the Aeronautics and Astronautics department. My advisor is Mehran Mesbahi.
 
 I have a strong passion for the intersection of application and theory. While my research is very theoretical, I make sure to ground everything in pratical application. I love seeing the interation of mathematics and hardware, especially in the context of big rockets :) 
@@ -23,10 +23,10 @@ I specialize in control theory: a math-heavy engineering discpline where system 
 
 Outside of work, my wife and I are huge foodies and love exploring the Seattle region for delicious restaurants. I alos love to hike, read, attend music venues. I also train Shotorkan karate (2nd degree black belt) and recently took up [curling](https://en.wikipedia.org/wiki/Curling) as a hobby. 
 
-![me and my wife](media/photo.jpeg)
+<!-- ![me and my wife](media/photo.jpeg) -->
 
 
-## projects
+## Projects
 
 [using policy optimization to design optimal controllers](projects/direct_policy_optimization.md)
 

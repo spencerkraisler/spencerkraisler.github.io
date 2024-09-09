@@ -1,6 +1,6 @@
 # Direct Policy Optimization through Riemannian Optimization Techniques
 
-[return](/index.md)
+[return](https://spencerkraisler.github.io)
 
 Direct policy optimization (PO) is a new subfield of control theory. Here, controllers are designed using policy gradient methods rather than solving for [value functions](https://en.wikipedia.org/wiki/Lyapunov_function) or Lyapunov certificates, say using [linear matrix inequalities](https://en.wikipedia.org/wiki/Linear_matrix_inequality). 
 
