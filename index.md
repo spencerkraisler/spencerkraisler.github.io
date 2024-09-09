@@ -17,20 +17,22 @@ Email: kraisler (at) uw (dot) edu
 ## About me
 Hi! I am a 4th year PhD student at the University of Washington. I work at the Robotics, Aerospace and Information Networks (RAIN) lab inside the Aeronautics and Astronautics department. My advisor is Mehran Mesbahi.
 
-I have a strong passion for the intersection of application and theory. While my research is very theoretical, I make sure to ground everything in pratical application. I love seeing the interation of mathematics and hardware, especially in the context of big rockets :) 
+I like being at the intersection of application and theory. While my research can lean towards the theoretical side, I make sure to ground myself with practical application and hardware/software implementation. I love seeing the interation of mathematics and hardware, especially in the context of big rockets :) 
 
-I specialize in control theory: a math-heavy engineering discpline where system feedback is used to control that system, *closing the loop*. Going more specific, I look into topics related to GNC, policy optimization, and optimal control. Going even *more* specific, my main thesis topic will be on **controller synthesis through Riemannian optimization**. *Controller synthesis* means designing a controller in an automated way, as opposed to hand-tuning. And *Riemannian optimization* is a toolkit from optimization theory used when your search space is constrained in a *smooth non-degenerate* way. 
+I specialize in [control theory](https://en.wikipedia.org/wiki/Control_theory). Going more specific, I look into topics related to GNC, policy optimization, and optimal control. Going even *more* specific, my main thesis topic will be on **controller synthesis through Riemannian optimization**. *Controller synthesis* means designing a controller in an automated way, as opposed to hand-tuning. And *Riemannian optimization* is a toolkit from optimization theory used when your search space is constrained in a *smooth non-degenerate* way. 
 
 Outside of work, my wife and I are huge foodies and love exploring the Seattle region for delicious restaurants. I alos love to hike, read, attend music venues. I also train Shotorkan karate (2nd degree black belt) and recently took up [curling](https://en.wikipedia.org/wiki/Curling) as a hobby. 
-
-<!-- ![me and my wife](media/photo.jpeg) -->
-
 
 ## Projects
 
 [using policy optimization to design optimal controllers](projects/direct_policy_optimization.md)
 
 [steering dynamic agents towards a single point on a smooth manifold](projects/distributed_geometric_consensus.md)
+
+
+![me and my wife](media/photo.jpeg)
+
+
 
 
 
