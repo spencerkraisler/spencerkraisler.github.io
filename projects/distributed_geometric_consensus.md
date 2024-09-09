@@ -1,5 +1,6 @@
 # Distributed Consensus on Riemannian Manifolds
 
+[return](/index.md)
 
 This project relates to distributed computation. Distributed computation is the study of protocls for a distributed network of processors, making them solve problems in a simple and intuitive way. Social networks, satellite constellations, and quadrotor swarms are all examples of distributed network of processors. 
 

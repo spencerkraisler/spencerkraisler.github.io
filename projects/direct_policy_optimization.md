@@ -1,5 +1,6 @@
 # Direct Policy Optimization through Riemannian Optimization Techniques
 
+[return](/index.md)
 
 Direct policy optimization (PO) is a new subfield of control theory. Here, controllers are designed using policy gradient methods rather than solving for [value functions](https://en.wikipedia.org/wiki/Lyapunov_function) or Lyapunov certificates, say using [linear matrix inequalities](https://en.wikipedia.org/wiki/Linear_matrix_inequality). 
 
@@ -21,9 +22,9 @@ At the time of this writing, there has been no policy gradient method for the LQ
 
 The secret to my technique that those before me did not try was [Riemannian optimization](https://www.nicolasboumal.net/book/), which is a central focus of my entire PhD journal. I was able to show that the set of all stabilizing controllers forms a mathematical construct called a [smooth manifold](https://en.wikipedia.org/wiki/Differentiable_manifold). This means that it is a shape that is locally Euclidean. The universe itself is a smooth manifold, as proven by Einstein...
 
-![the smooth manifold of dynamic controllers](../media/dynamic_controller_manifold_connected.png)
+![the smooth manifold of dynamic controllers](../media/dynamic_controller_manifold_connected.jpeg)
 
-![another one](../media/manifold_2.png)
+![another one](../media/manifold_2.jpeg)
 
 
 
