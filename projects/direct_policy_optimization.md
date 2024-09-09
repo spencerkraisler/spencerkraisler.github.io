@@ -22,9 +22,9 @@ At the time of this writing, there has been no policy gradient method for the LQ
 
 The secret to my technique that those before me did not try was [Riemannian optimization](https://www.nicolasboumal.net/book/), which is a central focus of my entire PhD journal. I was able to show that the set of all stabilizing controllers forms a mathematical construct called a [smooth manifold](https://en.wikipedia.org/wiki/Differentiable_manifold). This means that it is a shape that is locally Euclidean. The universe itself is a smooth manifold, as proven by Einstein...
 
-![the smooth manifold of dynamic controllers](../media/dynamic_controller_manifold_connected.jpeg)
+![the smooth manifold of dynamic controllers](../media/dynamic_controller_manifold_connected)
 
-![another one](../media/manifold_2.jpeg)
+![another one](../media/manifold_2)
 
 
 
