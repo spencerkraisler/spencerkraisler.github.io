@@ -4,8 +4,6 @@ University of Washington
 
 Department of Aeronautics and Astronautics
 
-Seattle, WA 98195
-
 Email: kraisler (at) uw (dot) edu
 
 [linkedin](https://www.linkedin.com/in/spencer-kraisler-250494149/)
