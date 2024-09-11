@@ -22,8 +22,7 @@ Consensus theory is the study of aggregating a group of states in a distributed 
 ## Consensus on Lie groups for the Riemannian Center of Mass
 The configuration space of nearly any mechanical robot is not a vector space, but a non-Euclidean space known as a Lie group. Lie groups provide a wealth of fascinating properties that are shared with vector spaces. Average consensus theory is the study of computing averages of points in a distributed manner, and has applications to any distributed network of systems such as social networks, MRIs, machine learning, and satellite constellations. However, this theory has historically been focused on vector spaces. In this paper, we present a novel way to compute the average of a set of points on a Lie group in a distributed manner. For non-Euclidean spaces, the generalization of an average is known as the Riemannian center of mass (RCM). This has many applications wherever one one wishes to estimate the state of a mechanical robot in a distributed manner. For example, consider a swarm of camera-equipped satellites estimating the orientation of a space debris object. We show that if the algorithm achieves consensus, then the consensus point is neccessarily at the RCM. We also emprically show a linear rate of convergence. I published this paper to the 2023 Conference on Decision and Control. I presented it at the conference in Singapore. [Link](https://ieeexplore.ieee.org/abstract/document/10384031)
 
-![plots](../media/solvers.png)
-
+<img src="../media/solvers.png" alt="Comparing my consensus algorithm against other established ones. As you can see, the other ones fail to converge to the RCM (right), furthermore, my algorithm demonstrates a linear convergence rate (left)." width="200"/>
 
 I also was an contributing author to two papers involving this topic:
 

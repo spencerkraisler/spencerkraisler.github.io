@@ -12,7 +12,9 @@ In recent years, PO has been shown to be an effective first-order procedure for 
 
 In my work, I focus on the linear-quadratic Gaussian problem. Here, we have a linear plant, and we wish to stabilize it with a linear dynamic output-feedback controller. I designed a policy gradient method and proved a local convergence guarantee with linear rate. 
 
-![plots](../media/RGD_plots.png)
+
+<img src="../media/RGD_plots.png" alt="Comparing my policy optimization method (RGD) against ordinary gradient descent (GD). As you can see, RGD has a far faster convergence rate." width="200"/>
+
 
 A local convergence guarantee means that there exists a neighborhood around the optimal polcy such that if I initialize the system with a policy inside that neighborhood, then convergence to the optimal policy is guarnateed. Furthermore, you get a linear rate of convergence. This means that the error is multipled by some factor $a \in (0,1)$ each iteration. 
 
@@ -22,10 +24,10 @@ At the time of this writing, there has been no policy gradient method for the LQ
 
 The secret to my technique that those before me did not try was [Riemannian optimization](https://www.nicolasboumal.net/book/), which is a central focus of my entire PhD journal. I was able to show that the set of all stabilizing controllers forms a mathematical construct called a [smooth manifold](https://en.wikipedia.org/wiki/Differentiable_manifold). This means that it is a shape that is locally Euclidean. The universe itself is a smooth manifold, as proven by Einstein...
 
-![the smooth manifold of dynamic controllers](../media/dynamic_controller_manifold_connected)
 
-![another one](../media/manifold_2)
+<img src="./media/dynamic_controller_manifold_connected.jpeg" alt="The smooth manifold of dynamic controllers for a particular plant." width="200"/>
 
+<img src="../media/manifold_2.jpeg" alt="The smooth manifold of static controllers for a particular plant." width="200"/>
 
 
 I wrapped up my work into a paper published to the IEEE Control systems Letters. This is a high quality journal. I will be presenting my work at the 2024 Conferece on Decision and Control in Mulan, Italy! [link](https://ieeexplore.ieee.org/abstract/document/10557741)
