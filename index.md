@@ -12,7 +12,7 @@ One of my big motivations for the aerospace industry is the Artemis program: est
 
 I specialize in control theory, and my main research interests are policy optimization and optimal control. My thesis topic will be on **controller synthesis through Riemannian optimization**. Here, *Riemannian optimization* is a toolkit from optimization theory used when your search space is constrained in a *smooth non-degenerate* way. 
 
-Outside of work, my wife and I are huge foodies and love exploring the Seattle region for delicious restaurants. I alos love to hike, read, attend music venues. I also train Shotorkan karate (2nd degree black belt) and recently took up [curling](https://en.wikipedia.org/wiki/Curling) as a hobby. 
+Outside of work, my wife and I are foodies. I love to hike, read, attend music venues, train Shotorkan karate (2nd degree black belt). I also recently took up [curling](https://en.wikipedia.org/wiki/Curling) as a hobby. 
 
 <img src="media/photo.jpeg" alt="me and my wife" width="200"/>
 
