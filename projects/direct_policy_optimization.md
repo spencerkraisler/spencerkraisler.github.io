@@ -25,11 +25,6 @@ At the time of this writing, there has been no policy gradient method for the LQ
 The secret to my technique that those before me did not try was [Riemannian optimization](https://www.nicolasboumal.net/book/), which is a central focus of my entire PhD journal. I was able to show that the set of all stabilizing controllers forms a mathematical construct called a [smooth manifold](https://en.wikipedia.org/wiki/Differentiable_manifold). This means that it is a shape that is locally Euclidean. The universe itself is a smooth manifold, as proven by Einstein...
 
 
-<img src="./media/dynamic_controller_manifold_connected.jpeg" alt="The smooth manifold of dynamic controllers for a particular plant." width="200"/>
-
-<img src="../media/manifold_2.jpeg" alt="The smooth manifold of static controllers for a particular plant." width="200"/>
-
-
 I wrapped up my work into a paper published to the IEEE Control systems Letters. This is a high quality journal. I will be presenting my work at the 2024 Conferece on Decision and Control in Mulan, Italy! [link](https://ieeexplore.ieee.org/abstract/document/10557741)
 
 I was later invited to write an article to the Springer Encyclopedia on Systems and Control on *geometric techniques* for direct policy optimization. This was a big endeavor for me because I worked alongside so many famous researchers, including Yang Zheng, Na Li, Mehran Mesbahi, and my friend Shahriar Talebi. These are the giants whose shoulders I stand upon for my work. Our article is currently in review. [link](https://arxiv.org/abs/2406.04243)
