@@ -28,8 +28,8 @@ Outside of work, my wife and I are huge foodies and love exploring the Seattle r
 [steering dynamic agents towards a single point on a smooth manifold](projects/distributed_geometric_consensus.md)
 
 
-![me and my wife](media/photo.jpeg)
-
+<!-- ![me and my wife](media/photo.jpeg) -->
+<img src="media/photo.jpeg" alt="me and my wife" width="200"/>
 
 
 
