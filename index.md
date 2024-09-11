@@ -6,13 +6,17 @@
 *Links*: [linkedin](https://www.linkedin.com/in/spencer-kraisler-250494149/), [github](https://github.com/spencerkraisler), [resume](https://spencerkraisler.github.io/resume.pdf)
 
 ## About me
-Hello. I am a 4th year PhD student at the University of Washington. I work at the Robotics, Aerospace and Information Networks (RAIN) lab inside the Aeronautics and Astronautics department. My advisor is Mehran Mesbahi.
+Hello. I am a 4th year PhD student at UW. I work at the RAIN lab within the Aerospace department. My advisor is Mehran Mesbahi.
 
-I specialize in control theory, and my main research interests policy optimization and optimal control. My thesis topic will be on **controller synthesis through Riemannian optimization**. Here,*controller synthesis* means designing a controller in an automated way, as opposed to hand-tuning. And *Riemannian optimization* is a toolkit from optimization theory used when your search space is constrained in a *smooth non-degenerate* way. 
+One of my big motivations for the aerospace industry is the Artemis program: establishing a human prescence on the moon. The program represents the next stage of human civilization, and I want to contribute to that! I also like seeing the intersection of application and theory, which is why I am pursuing a PhD. While my research can lean towards the theoretical side, I make sure to ground myself with practical application and hardware/software implementation.
+
+I specialize in control theory, and my main research interests are policy optimization and optimal control. That is, using policy gradient methods to design controllers, rather than solving LMIs as is usually done. My thesis topic will be on **controller synthesis through Riemannian optimization**. Here, *Riemannian optimization* is a toolkit from optimization theory used when your search space is constrained in a *smooth non-degenerate* way. 
 
 Outside of work, my wife and I are huge foodies and love exploring the Seattle region for delicious restaurants. I alos love to hike, read, attend music venues. I also train Shotorkan karate (2nd degree black belt) and recently took up [curling](https://en.wikipedia.org/wiki/Curling) as a hobby. 
 
-One of my big motivations for the aerospace industry is the Artemis program: establishing a human prescence on the moon. The program represents the next stage of human civilization, and I want to contribute to that! I also like seeing the intersection of application and theory. While my research can lean towards the theoretical side, I make sure to ground myself with practical application and hardware/software implementation.
+
+
+
 
 <img src="media/photo.jpeg" alt="me and my wife" width="200"/>
 
