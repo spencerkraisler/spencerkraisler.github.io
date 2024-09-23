@@ -6,15 +6,15 @@
 **Links**: [linkedin](https://www.linkedin.com/in/spencer-kraisler-250494149/), [github](https://github.com/spencerkraisler), [resume](https://spencerkraisler.github.io/resume.pdf)
 
 ## About me
-Hello. I am a 4th year PhD student at UW. I work at the RAIN lab within the Aerospace department. My advisor is Mehran Mesbahi.
+Hello. I am a 4th year PhD student at UW. I work at the RAIN lab within the Aerospace department. My advisor is Mehran Mesbahi. As a PhD student, my job is to research and develop solutions to math-heavy practical problems relating to controls, robotics, and aerospace. I love what I do because I get to stand at the intersection of theory and application, and embrace challenging math-heavy engineering problems.
 
-As a PhD student, my job is to research math-heavy practical problem set-ups and to develop unique solutions for them. I love what I do because I get to stand at the intersection of theory and application, and use my skills to solve complicated math-heavy problems. 
+I specialize in control theory, and my main research interests are policy optimization, reinforcement learning, and optimal control. My thesis topic will be on **controller synthesis through Riemannian optimization**. Here, *Riemannian optimization* is a toolkit from optimization theory used when your search space is constrained in a *smooth non-degenerate* way.
 
-One of my initial motivations for pursuing a PhD in aerospace was the Artemis program: establishing a human prescence on the moon! The program represents the next stage of human civilization, and I wanted to contribute to that! I'm happy that I have, in my own way, through research and publishing several papers on controls. 🙂
+One of my initial motivations for pursuing a PhD in aerospace was the Artemis program: establishing a human prescence on the moon! I wanted to contribute to that! I'm happy that I have, in my own way, through research and publishing several papers on controls, and working alongside amazing people here at UW Aerospace, as well as NASA. 🙂 Since then, my interests have only grown. I've been learning and utilizing more tools from machine learning and trajectory optimization, especially in the context of robotics and AI. 
+<!-- 
+But the heart of my interests will always be the same: mathematics, the intersection of theory and applications, and designing simple solutions to complicated math-heavy problems. While my research can lean towards the theoretical side, I make sure to ground myself with practical application and hardware/software implementation. -->
 
-Since then, my interests have only grown. I've been learning and utilizing more tools from machine learning and trajectory optimizaiton, especially in the context of robotics and AI. But the heart of my interests will always be the same: mathematics, the intersection of theory and applications, and designing simple solutions to complex math-heavy problem set-ups. While my research can lean towards the theoretical side, I make sure to ground myself with practical application and hardware/software implementation.
 
-I specialize in control theory, and my main research interests are policy optimization, reinforcement learning, and optimal control. My thesis topic will be on **controller synthesis through Riemannian optimization**. Here, *Riemannian optimization* is a toolkit from optimization theory used when your search space is constrained in a *smooth non-degenerate* way. *Controller synthesis* means desinging a controller in an automated way, as opposed to hand-tuning (i.e. trail-and-error). 
 
 
 Outside of work, I [curl](https://en.wikipedia.org/wiki/Curling), train Shotokan karate (2nd degree black belt), and do lots of reading. My wife and I are huge foodies and enjoy discovering new restaurants in the Seattle region. 
