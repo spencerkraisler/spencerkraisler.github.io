@@ -6,20 +6,29 @@
 **Links**: [linkedin](https://www.linkedin.com/in/spencer-kraisler-250494149/), [github](https://github.com/spencerkraisler), [resume](https://spencerkraisler.github.io/resume.pdf)
 
 ## About me
-Hello. I am a 4th year PhD student at UW. I work at the RAIN lab within the Aerospace department. My advisor is Mehran Mesbahi. As a PhD student, my job is to research and develop solutions to math-heavy practical problems relating to controls, robotics, and aerospace. I love what I do because I get to stand at the intersection of theory and application, and embrace challenging math-heavy engineering problems.
+Hello. I am a 4th year PhD student at UW. I work at the RAIN lab within the Aerospace department. My advisor is Mehran Mesbahi. As a PhD student, my job is to research and develop solutions to math-heavy practical problems relating to controls, robotics, and aerospace. 
 
-I specialize in control theory, and my main research interests are policy optimization, reinforcement learning, and optimal control. My thesis topic will be on **controller synthesis through Riemannian optimization**. Here, *Riemannian optimization* is a toolkit from optimization theory used when your search space is constrained in a *smooth non-degenerate* way.
+I love what I do because I get to stand at the intersection of theory and application, and embrace challenging math-heavy engineering problems. For example, over the summer, my lab and I built a quadrotor set-up in order to test algorithms in real-time. 
 
-One of my initial motivations for pursuing a PhD in aerospace was the Artemis program: establishing a human prescence on the moon! I wanted to contribute to that! I'm happy that I have, in my own way, through research and publishing several papers on controls, and working alongside amazing people here at UW Aerospace, as well as NASA. 🙂 Since then, my interests have only grown. I've been learning and utilizing more tools from machine learning and trajectory optimization, especially in the context of robotics and AI. 
+<img src="media/quadrotor.jpeg" alt="D.R.O.P.L.E.T." width="200"/>
+
+This involved learning a great deal about hardware implementation, including setting up a ROS environment and uploading autopilot software. I knew very little about this at the beginning, but I quickly learned and grew to appreicate how powerful this stuff is. Now, I am writing a GNC system into the ROS environment. By this, I mean that I want a script where the input is the trajectory cost function and some constraint (e.g. land the quadrotor while satisfying the *line-of-sight constraint*), and the output will be the optimal trajectory. Then, I will also have an [MPC script](https://en.wikipedia.org/wiki/Model_predictive_control) that will steer the quadrotor (in real time) to track that nominal trajectory. 
+
+<!-- One of my initial motivations for pursuing a PhD in aerospace was the Artemis program: establishing a human prescence on the moon! I wanted to contribute to that! I'm happy that I have, in my own way, through research and publishing several papers on controls, and working alongside amazing people here at UW Aerospace, as well as NASA. Since then, my interests have only grown. I've been learning and utilizing more tools from machine learning and trajectory optimization, especially in the context of robotics and AI.  -->
+
+Outside of work, I [curl](https://en.wikipedia.org/wiki/Curling), train Shotokan karate (2nd degree black belt), and do lots of reading. My wife and I are huge foodies and enjoy discovering new restaurants in the Seattle region. 
+
+<img src="media/photo.jpeg" alt="me and my wife" width="200"/>
+
+<!-- I specialize in control theory, and my main research interests are policy optimization, reinforcement learning, and optimal control. My thesis topic will be on **controller synthesis through Riemannian optimization**. Here, *Riemannian optimization* is a toolkit from optimization theory used when your search space is constrained in a *smooth non-degenerate* way. -->
+
+
 <!-- 
 But the heart of my interests will always be the same: mathematics, the intersection of theory and applications, and designing simple solutions to complicated math-heavy problems. While my research can lean towards the theoretical side, I make sure to ground myself with practical application and hardware/software implementation. -->
 
 
 
 
-Outside of work, I [curl](https://en.wikipedia.org/wiki/Curling), train Shotokan karate (2nd degree black belt), and do lots of reading. My wife and I are huge foodies and enjoy discovering new restaurants in the Seattle region. 
-
-<img src="media/photo.jpeg" alt="me and my wife" width="200"/>
 
 ## Projects
 
