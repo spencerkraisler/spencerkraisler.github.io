@@ -6,22 +6,23 @@
 
 main:
   - title: "Publications"
-    url: /publications/
+    #url: /publications/
+    url: https://scholar.google.com/citations?user=BlVqeAcAAAAJ&hl=en&oi=ao
 
   - title: "Talks"
     url: /talks/    
 
-  - title: "Teaching"
-    url: /teaching/    
+  # - title: "Teaching"
+  #   url: /teaching/    
     
   - title: "Portfolio"
     url: /portfolio/
         
-  - title: "Blog Posts"
-    url: /year-archive/
+  # - title: "Blog Posts"
+  #   url: /year-archive/
     
   - title: "CV"
-    url: /cv/
+    url: /files/myresume.pdf
     
-  - title: "Guide"
-    url: /markdown/
+  # - title: "Guide"
+  #   url: /markdown/

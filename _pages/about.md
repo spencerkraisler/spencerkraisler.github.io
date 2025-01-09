@@ -1,13 +1,46 @@
 ---
 permalink: /
-title: "Hi! I'm Spencer Kraisler"
+title: "👋 Hello there, I'm Spencer!"
 author_profile: true
 redirect_from: 
   - /about/
   - /about.html
 ---
 
-Welcome to my website! I am Spencer Kraisler, a fourth year Ph.D. candidate in the Aeronautics and Astronautics department at University of Washington (UW) working with Prof. Mehran Mesbahi. I earned a B.S. in Mathematics at UW in 2021. I intend to defend my dissertation and graduate by January 2026. 
 
-My research interests lie in learning, control, and geometry. The broad goal of my research is to use policy gradient methods to design optimal policies for control systems while also obtaining theoretical guarantees on convergence and optimizer performance. My target audience comprises RL experts who demand optimizer performance assurances in their control applications. While there’s ample potential for RL in control theory, we must ensure that all RL applications adhere to safety guarantees, as control theory primarily deals with both manned, expensive, and unstable systems where safety is absolutely paramount! My research intersects Riemannian geometry, machine learning, and control theory. For more detailed research projects and interests, please refer to the research tab and publication tab.
 
+👨‍🏫 I'm a final year PhD candidate at UW Aero & Astro working with my advisor Prof. Mehran Mesbahi at the RAIN Lab
+
+🧮 I love applying complex math solutions to practical engineering applications. My drive for pursuing a PhD in aerospace engineering is to be at the intersection of theory and application.
+
+📚 I'm currently working towards my PhD thesis where I am using Riemannian optimization techniques to design optimal policies. This bridges fields such as reinforcment learning, Riemannian geometry, and control theory. 
+
+🤖 I also have a lot of interest and experience in edge computing, distributed optimization, machine learning, and AI.
+
+
+## Highlights
+
+### 🥇 Best Student Paper
+I was awarded **Best Student Paper** at the **2024 IEEE Conference on Decision and Control** amongst hundreds of student authors. The CDC is the largest and most prestigious international controls conference. This is a huge honor.
+
+My [paper](https://ieeexplore.ieee.org/abstract/document/10557741/) focuses on a fundamental control problem called the [linear-quadratic Gaussian](https://en.wikipedia.org/wiki/Linear–quadratic–Gaussian_control) using techniques from the emerging controls field called Direct Policy Optimization (DPO). DPO combines techniques from reinforcement learning and the theoretical safety guarantees from control theory to solve various control problems. I employed a novel technique called Riemannian optimization, which theoretically ensured convergence with an exceptionally fast rate. This new approach was an entire order of magnitude faster than the conventional policy gradient method. 
+
+![](/images/uw_group_cdc2024.jpeg)
+
+### 🚀 SpaceX Internship
+In 2022, I did an internship at SpaceX. I was a flight software at Starlink and I worked on measuring the network robustness and performance of the Starlink constellation.
+
+### 🤖 Open Source Contribution
+I have experience contributing to [ManOpt](https://www.manopt.org), an open-source Riemannian optimization library for Python, Matlab, and Julia. 
+
+I am also my lab's GitHub Organization Maintainer. I make sure our lab's github repos are cleanly written, and resolve any git issues with my labmates. Check out our [lab github org](https://github.com/rainlabuw) to see all of the awesome projects we're working on.
+
+
+### 🚁 Quadcopter Testbed
+Over the 2024 summer, my lab and I built a quadcopter hardware testbed to implement control algorithms on. This involved uploading and setting up the autopilot PX4 software and setting up and using a ROS environment. I learned so much about hardware implementation and ROS with this project. 
+
+![](/images/quad.jpeg)
+
+
+### 🥉 3rd Place at Annual UW Aero & Astro research showcase
+I was awarded 3rd place at the annual UW Aero & Astro research showcase for my work on consensus algorithms over Riemannian manifolds. [More info](/talks/2022-10-01-research-showcase)
