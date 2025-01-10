@@ -9,11 +9,11 @@ redirect_from:
 
 
 
-👨‍🏫 I'm a final year PhD candidate at UW Aero & Astro working with my advisor Prof. Mehran Mesbahi at the RAIN Lab
+👨‍🏫 I'm a final-year PhD candidate at UW Aero & Astro working with my advisor, Prof. Mehran Mesbahi, at the RAIN Lab.
 
 🧮 I love applying complex math solutions to practical engineering applications. My drive for pursuing a PhD in aerospace engineering is to be at the intersection of theory and application.
 
-📚 I'm currently working towards my PhD thesis where I am using Riemannian optimization techniques to design optimal policies. This bridges fields such as reinforcment learning, Riemannian geometry, and control theory. 
+📚 I'm currently working towards my PhD thesis, where I am using Riemannian optimization techniques to design optimal policies. This bridges fields such as reinforcement learning, Riemannian geometry, and control theory. 
 
 🤖 I also have a lot of interest and experience in edge computing, distributed optimization, machine learning, and AI.
 
@@ -28,12 +28,12 @@ My [paper](https://ieeexplore.ieee.org/abstract/document/10557741/) focuses on a
 ![](/images/uw_group_cdc2024.jpeg)
 
 ### 🚀 SpaceX Internship
-In 2022, I did an internship at SpaceX. I was a flight software at Starlink and I worked on measuring the network robustness and performance of the Starlink constellation.
+In 2022, I did an internship at SpaceX. I was a flight software engineer intern at Starlink and I worked on measuring the network robustness and performance of the Starlink constellation.
 
 ### 🤖 Open Source Contribution
-I have experience contributing to [ManOpt](https://www.manopt.org), an open-source Riemannian optimization library for Python, Matlab, and Julia. 
+I have experience contributing to [ManOpt](https://www.manopt.org), an open-source Riemannian optimization library for Python, MATLAB, and Julia. 
 
-I am also my lab's GitHub Organization Maintainer. I make sure our lab's github repos are cleanly written, and resolve any git issues with my labmates. Check out our [lab github org](https://github.com/rainlabuw) to see all of the awesome projects we're working on.
+I am also my lab's GitHub Organization Maintainer. I make sure our lab's GitHub repos are cleanly written, and resolve any git issues with my labmates. Check out our [lab GitHub org](https://github.com/rainlabuw) to see all of the awesome projects we're working on.
 
 
 ### 🚁 Quadcopter Testbed
@@ -44,3 +44,4 @@ Over the 2024 summer, my lab and I built a quadcopter hardware testbed to implem
 
 ### 🥉 3rd Place at Annual UW Aero & Astro research showcase
 I was awarded 3rd place at the annual UW Aero & Astro research showcase for my work on consensus algorithms over Riemannian manifolds. [More info](/talks/2022-10-01-research-showcase)
+
