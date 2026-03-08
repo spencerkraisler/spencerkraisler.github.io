@@ -9,18 +9,15 @@ main:
     #url: /publications/
     url: https://scholar.google.com/citations?user=BlVqeAcAAAAJ&hl=en&oi=ao
 
-  - title: "Talks"
-    url: /talks/    
-
   # - title: "Teaching"
   #   url: /teaching/    
     
-  - title: "Portfolio"
-    url: /portfolio/
-        
-  - title: "Blog Posts"
+  - title: "Dissertation"
+    url: /dissertation/
+
+  - title: "Posts"
     url: /year-archive/
-    
+        
   - title: "CV"
     url: /files/myresume.pdf
     

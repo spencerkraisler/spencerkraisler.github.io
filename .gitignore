@@ -13,3 +13,6 @@ node_modules
 package-lock.json
 
 **/.DS_Store
+# local dev
+.bundle/
+.DS_Store
