@@ -301,3 +301,39 @@
 .blog-sidebar .author__name {
   margin-bottom: 1em;
 }
+
+/* no "Follow" dropdown: links are always visible, as a wrapping row on narrow screens */
+.author__urls-wrapper {
+  display: block;
+  cursor: default;
+}
+
+.author__urls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em;
+  position: relative;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  z-index: auto;
+
+  &:before,
+  &:after {
+    display: none;
+  }
+
+  a {
+    margin-bottom: 0;
+  }
+
+  @include breakpoint($large) {
+    display: block;
+
+    a {
+      margin-bottom: 0.6em;
+    }
+  }
+}

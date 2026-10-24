@@ -1,0 +1,1442 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Relativistic Rocket</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Saira+Semi+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#e7eaf5; --panel:#dde1f0; --ink:#141935; --muted:#565f8d; --line:#c0c6e0;
+  --btn:#f7f8fd; --btn-ink:#141935; --amber:#a35f00; --amber-bg:#f8dfaa;
+  --blue:#2f4fd6; --rose:#c02c48; --space:#05060d;
+  color-scheme: light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0b0e20; --panel:#121630; --ink:#e3e8ff; --muted:#8c94c2; --line:#262c52;
+    --btn:#1a1f3d; --btn-ink:#e3e8ff; --amber:#f4b041; --amber-bg:#3b2a08;
+    --blue:#96aaff; --rose:#ff8698; --space:#05060d;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0b0e20; --panel:#121630; --ink:#e3e8ff; --muted:#8c94c2; --line:#262c52;
+  --btn:#1a1f3d; --btn-ink:#e3e8ff; --amber:#f4b041; --amber-bg:#3b2a08;
+  --blue:#96aaff; --rose:#ff8698; --space:#05060d;
+  color-scheme: dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html,body{height:100%;margin:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:"Saira Semi Condensed","Avenir Next Condensed","Roboto Condensed","Arial Narrow",system-ui,sans-serif;
+  font-size:14px; line-height:1.3;
+  display:flex; flex-direction:column; overflow:hidden;
+  -webkit-user-select:none; user-select:none; -webkit-tap-highlight-color:transparent;
+  font-variant-numeric: tabular-nums;
+}
+.hud{background:var(--panel); border-bottom:1px solid var(--line); padding:8px 12px 7px; display:flex; flex-direction:column; gap:5px}
+.top{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.25fr); gap:10px; align-items:end}
+.lbl{display:block; color:var(--muted); font-size:11.5px; letter-spacing:.01em; white-space:nowrap}
+.big{display:block; font-size:30px; font-weight:600; line-height:1; letter-spacing:-.01em}
+.mid{display:block; font-size:18px; font-weight:600; line-height:1.1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.stats{display:grid; grid-template-columns:minmax(0,.9fr) minmax(0,.9fr) minmax(0,1.3fr); gap:3px 10px; border-top:1px solid var(--line); padding-top:5px}
+.stats .w2{grid-column:span 2}
+.stats b{font-weight:600; font-size:14.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block}
+.where{display:flex; flex-direction:column; gap:1px; font-size:12.5px; height:2.7em; overflow:hidden}
+.where span{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+#extra{white-space:nowrap !important}
+#loc{font-weight:600}
+#extra{color:var(--muted)}
+.view{position:relative; flex:1; min-height:200px; background:var(--space)}
+canvas{position:absolute; inset:0; width:100%; height:100%; touch-action:none; display:block}
+#banner{
+  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  width:min(92%,420px); background:var(--panel); color:var(--ink);
+  border:1px solid var(--line); border-radius:14px; padding:16px 18px; text-align:left;
+}
+#banner h2{margin:0 0 6px; font-size:19px; font-weight:600}
+#banner p{margin:0 0 12px}
+.controls{background:var(--panel); border-top:1px solid var(--line); padding:8px 10px 10px; display:flex; flex-direction:column; gap:8px}
+.row{display:flex; gap:8px; align-items:center}
+button,select{
+  font:inherit; color:var(--btn-ink); background:var(--btn);
+  border:1px solid var(--line); border-radius:9px; padding:7px 10px; min-height:44px; cursor:pointer;
+  touch-action:manipulation;
+}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--blue); outline-offset:2px}
+.seg{display:flex; border:1px solid var(--line); border-radius:9px; overflow:hidden; flex:1}
+.seg button{border:0; border-radius:0; flex:1; background:transparent}
+.seg button[aria-pressed="true"]{background:var(--ink); color:var(--panel); font-weight:600}
+.zoom{display:flex; gap:4px}
+.zoom button{min-width:44px; padding:7px 8px}
+.thr{flex:1; display:flex; flex-direction:column; gap:2px; font-size:12.5px; color:var(--muted); min-width:0}
+.thr b{color:var(--ink); font-weight:600}
+input[type=range]{width:100%; accent-color:var(--amber); margin:0; height:24px}
+select{max-width:150px}
+.thrv{flex:1; min-width:0; font-size:12.5px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.thrv b{color:var(--ink); font-weight:600}
+.pads{gap:8px}
+.pad{flex:1; min-height:58px; font-size:16px; font-weight:600; border-radius:12px; touch-action:none}
+.pad.on{background:var(--amber-bg); border-color:var(--amber); color:var(--ink)}
+.pad.stop{flex:.8}
+.pad.stop.on{background:var(--ink); color:var(--panel)}
+#hint,#toast{position:absolute; left:50%; top:10px; transform:translateX(-50%); width:max-content; max-width:min(92%,360px); background:var(--panel); color:var(--ink); border:1px solid var(--line); border-radius:10px; padding:8px 12px; font-size:13.5px; text-align:center; pointer-events:none}
+#toast{font-weight:600}
+.journey{position:relative; height:27px; margin:0 6px}
+.jtrack{position:absolute; left:0; right:0; top:4px; height:4px; border-radius:2px; background:var(--line)}
+.jfill{height:100%; width:0; border-radius:2px; background:var(--amber)}
+.jtick{position:absolute; top:2px; width:2px; height:8px; background:var(--muted); transform:translateX(-1px)}
+.jlab{position:absolute; top:13px; font-size:10.5px; line-height:1; color:var(--muted); transform:translateX(-50%); white-space:nowrap}
+.jlab.end{transform:translateX(-100%)}
+.jdot{position:absolute; top:1px; width:10px; height:10px; border-radius:50%; background:var(--amber); box-shadow:0 0 0 2px var(--panel); transform:translateX(-5px)}
+dialog{max-width:min(560px,92vw); border:1px solid var(--line); border-radius:14px; background:var(--panel); color:var(--ink); padding:18px 20px; line-height:1.45}
+dialog::backdrop{background:rgba(0,0,0,.55)}
+dialog h2{margin:0 0 8px; font-size:19px; font-weight:600}
+dialog p{margin:0 0 10px; font-size:14px}
+dialog .keys{color:var(--muted); font-size:13px}
+.keys-hint{display:none; font-size:12.5px; color:var(--muted); white-space:nowrap}
+/* desktop layout (toggle): one-row HUD, compact controls, keyboard hint, bigger view */
+html[data-layout="desktop"] .hud{display:grid; grid-template-columns:minmax(0,.8fr) minmax(0,1.7fr) minmax(0,1.1fr); align-items:center; gap:4px 22px; padding:10px 18px}
+html[data-layout="desktop"] .stats{grid-template-columns:repeat(4,minmax(0,1fr)); border-top:0; padding-top:0}
+html[data-layout="desktop"] .stats .w2{grid-column:auto}
+html[data-layout="desktop"] .controls{flex-direction:row; flex-wrap:wrap; align-items:center; gap:8px 14px; padding:8px 16px 10px}
+html[data-layout="desktop"] .controls .journey{flex:1 1 100%}
+html[data-layout="desktop"] .controls .r-mode{flex:0 0 370px}
+html[data-layout="desktop"] .controls .r-info{flex:1 1 420px}
+html[data-layout="desktop"] .controls .pads{flex:0 1 440px}
+html[data-layout="desktop"] .pad{min-height:44px; font-size:15px}
+html[data-layout="desktop"] .keys-hint{display:inline}
+</style>
+</head>
+<body>
+<header class="hud" aria-live="off">
+  <div class="top">
+    <div><span class="lbl">Your clock<span id="tsc"></span></span><span id="tau" class="big">0:00.0</span></div>
+    <div><span class="lbl">Earth-frame clock</span><span id="tg" class="mid">0 s</span></div>
+  </div>
+  <div class="stats">
+    <div class="w2"><span class="lbl">Speed</span><b id="spd">0</b></div>
+    <div><span class="lbl">γ (time dilation)</span><b id="gam">1</b></div>
+    <div><span class="lbl">Rapidity η</span><b id="rap">0</b></div>
+    <div class="w2"><span class="lbl">From Earth</span><b id="dist">0</b></div>
+  </div>
+  <div class="where"><span id="loc">On Earth</span><span id="extra"></span></div>
+</header>
+
+<div class="view" id="view">
+  <canvas id="cv" aria-label="The universe along one line, as the rocket measures or sees it"></canvas>
+  <div id="hint">Hold <b>Thrust ▶</b> to launch. The engine starts gently and builds up the longer you hold it.</div>
+  <div id="toast" hidden></div>
+  <div id="banner" hidden>
+    <h2 id="bTitle"></h2>
+    <p id="bText"></p>
+    <div class="row"><button id="bGo">Keep exploring</button><button id="bReset">Restart at Earth</button></div>
+  </div>
+</div>
+
+<footer class="controls">
+  <div class="journey" id="journey" role="img" aria-label="Progress from Earth to the edge of the observable universe, on a log scale">
+    <div class="jtrack"><div class="jfill" id="jfill"></div></div>
+    <div class="jdot" id="jdot"></div>
+  </div>
+  <div class="row r-mode">
+    <div class="seg" role="group" aria-label="View mode">
+      <button id="mInst" aria-pressed="true">Instant-sight</button>
+      <button id="mReal" aria-pressed="false">Real-sight</button>
+    </div>
+    <button id="lay" aria-label="Switch layout">Desktop view</button>
+  </div>
+  <div class="row r-info">
+    <span class="thrv">Thrust <b id="thrV">off</b></span>
+    <span class="keys-hint">Keys: ← → thrust, space stop, V view, P pause</span>
+    <select id="jump" aria-label="Jump to a place"></select>
+    <button id="pause">Pause</button>
+  </div>
+  <div class="row pads">
+    <button id="tL" class="pad">◀ Thrust</button>
+    <button id="brk" class="pad stop">Stop</button>
+    <button id="tR" class="pad">Thrust ▶</button>
+  </div>
+</footer>
+
+<dialog id="about">
+  <h2>How this universe works</h2>
+  <p>You fly a rocket along one straight line. The cruise-speed slider sets the speed you want: the center is stopped, right flies right, left flies left. Its scale is logarithmic in proper velocity γv, from about 1 m/s near the center to γ = 2×10¹⁹ at the ends; at high speed each step is the same change in rapidity. The rocket eases to the new speed, and the readout shows the push you feel while it does. Hold ◀ or ▶ to slide the target, or tap Stop.</p>
+  <p>The camera keeps a fixed zoom. Length contraction does the zooming: the faster you go, the more of the universe squeezes into view. Use − and + to change the zoom, and Reset to go back. The bar above the controls shows your progress toward the edge on a log scale.</p>
+  <p><b>Instant-sight</b> shows where everything is right now in your rest frame. Distances and sizes shrink by γ. <b>Real-sight</b> shows where the light reaching you right now was emitted, in your rest frame, with its Doppler color shift. Ahead looks stretched and blue, behind looks squeezed and red. Light shifted far outside the visible band is drawn as a faint ghost.</p>
+  <p>The model is flat spacetime: no gravity and no cosmic expansion. Every object sits at its true distance from the Sun with its true diameter. Venus, Mercury, the Sun and the near half of the Milky Way are to the left; everything else is to the right. Far objects use light-travel distance, and the edge is 13.8 billion light-years away. Spiral-arm positions, galaxy light profiles, quasar host sizes and the background stars are approximate or procedural.</p>
+  <p>Position is stored as an exact integer number of millimeters, so you can stop anywhere, even next to a quasar, and still see millimeter detail.</p>
+  <p>Bodies are drawn as disks. Motion squeezes only the direction of travel, so in instant-sight a fast-moving planet becomes a thin ellipse, then a pancake. Near light speed things cross the view in a blink. If you want to watch one squash, tap 1× to slow playback to 1/10, 1/100 or 1/1000; tap again to cycle back. Your clock always reads true proper time. Your rocket is drawn life-size: 50 m long and 9 m wide. At most zooms it is far smaller than a pixel, so amber marks show where you are.</p>
+  <p class="keys">Keys: ← → change speed, space stop, V switch view, + − zoom, 0 reset zoom, T slow motion, P pause. Pinch or scroll to zoom.</p>
+  <form method="dialog"><button>Close</button></form>
+</dialog>
+
+<script>
+'use strict';
+/* ===================== constants ===================== */
+const C = 299792458, G0 = 9.80665;
+const AU = 1.495978707e11, LY = 9.4607304725808e15, RSUN = 6.957e8, KM = 1e3;
+const RS_PER_MSUN = 2953.25;              // Schwarzschild radius per solar mass, m
+const SUN_X = -AU;                        // origin = Earth's center
+const fromSun = d => SUN_X + d;
+const RE = 6371 * KM;
+const EDGE = 13.8e9 * LY;
+const YEAR = 365.25 * 86400;
+const toMM = m => BigInt(Math.round(m * 1000));
+const EDGE_MM = toMM(EDGE);
+const START_MM = toMM(RE + 2);
+const ETA_MAX = 340;
+const RAMP_T = 40; // seconds for a burn to build from 1 g to the set thrust
+const W_MIN = 150; // half-width of the view at rest, m: the 50 m rocket is clearly visible                      // half-width of the auto view at rest, m
+const LOOK = 4;                           // auto view shows ~3 s of travel
+
+// Max thrust: a non-stop burn from Earth reaches the edge in 600 s of proper time.
+const A_MAX = (() => {
+  const target = EDGE - RE;
+  // ramped burn: a(t) = g (A/g)^(t/RAMP_T) for t < RAMP_T, then A
+  const d = a => {
+    const k = Math.log(a / G0) / RAMP_T;
+    const eh = t => (Math.abs(k) < 1e-9 ? G0 * t : G0 * (Math.exp(k * t) - 1) / k) / C;
+    let s = 0; const n = 400, h = RAMP_T / n;
+    for (let i = 0; i < n; i++) s += C * Math.sinh(eh((i + 0.5) * h)) * h;
+    const e0 = eh(RAMP_T), e1 = e0 + a * (600 - RAMP_T) / C;
+    return s + C * C / a * (Math.cosh(e1) - Math.cosh(e0));
+  };
+  let lo = 1, hi = 1e9;
+  for (let i = 0; i < 200; i++) { const m = Math.sqrt(lo * hi); if (d(m) > target) hi = m; else lo = m; }
+  return Math.sqrt(lo * hi);
+})();
+const T10 = Math.round(100 * Math.log10(A_MAX / G0)); // slider position of the 10-minute pace (slider = 100 log10 g)
+
+/* ===================== hashing / noise ===================== */
+function h4(a, b, c, d) {
+  let h = Math.imul(a | 0, 0x9E3779B1) ^ Math.imul((b | 0) + 0x7F4A7C15, 0x85EBCA77)
+        ^ Math.imul((c | 0) + 0x165667B1, 0xC2B2AE3D) ^ Math.imul((d | 0) + 0x27D4EB2F, 0x2C1B3C6D);
+  h ^= h >>> 15; h = Math.imul(h, 0x297A2D39); h ^= h >>> 13; h = Math.imul(h, 0x85EBCA77); h ^= h >>> 16;
+  return (h >>> 0) / 4294967296;
+}
+const TWO32 = 4294967296;
+const sstep = t => t * t * (3 - 2 * t);
+function smooth(a, b, x) { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); }
+// 2D value-noise fBm in local (double) coordinates, octaves tied to the pixel footprint f.
+function fbm2(seed, sx, sy, f, cmax) {
+  const o = Math.log2(f * 1.5), n0 = Math.ceil(o), t = n0 - o;
+  const ncap = Math.log2(cmax);
+  let nTop = n0 + 4, capped = false;
+  if (ncap < nTop) { nTop = Math.floor(ncap); capped = true; }
+  if (nTop < n0) return 0.5;
+  let sum = 0, ws = 0;
+  for (let n = nTop; n >= n0; n--) {
+    const cell = Math.pow(2, n);
+    let w = Math.pow(0.55, o + 4.5 - n);
+    if (n === n0) w *= t;
+    if (n === n0 + 4 && !capped) w *= (1 - t);
+    if (capped) w *= Math.min(1, ncap - n + 1);
+    const qx = sx / cell, qy = sy / cell;
+    const ix = Math.floor(qx), iy = Math.floor(qy), fx = sstep(qx - ix), fy = sstep(qy - iy);
+    const hi = Math.floor(ix / TWO32), lo = ix - hi * TWO32;
+    const lo1 = lo + 1 === TWO32 ? 0 : lo + 1, hi1 = lo + 1 === TWO32 ? hi + 1 : hi;
+    const sd = seed * 131 + n;
+    const a = h4(lo, hi, iy, sd), b = h4(lo1, hi1, iy, sd), c = h4(lo, hi, iy + 1, sd), d = h4(lo1, hi1, iy + 1, sd);
+    const v = a + (b - a) * fx + (c - a + (a - b - c + d) * fx) * fy;
+    sum += w * v; ws += w;
+  }
+  return ws > 0 ? sum / ws : 0.5;
+}
+// Column-wise 2D value noise: hashes the lattice once per column, then interpolates down the rows.
+const COLA = new Float32Array(512);
+function colOctave(out, lo, hi, fx, n, seed, ycells, w) {
+  const ny = Math.min(500, Math.ceil(Hb * ycells) + 2);
+  const sx = sstep(fx);
+  let lo1 = lo + 1, hi1 = hi; if (lo1 >= TWO32) { lo1 = 0; hi1 = hi + 1; }
+  for (let iy = 0; iy <= ny; iy++) { const a = h4(lo, hi, iy, n * 977 + seed), b = h4(lo1, hi1, iy, n * 977 + seed); COLA[iy] = a + (b - a) * sx; }
+  for (let y = 0; y < Hb; y++) {
+    const q = (y + 0.5) * ycells, iy = Math.floor(q), fy = sstep(q - iy);
+    const a = COLA[iy], b = COLA[iy + 1]; out[y] += w * (a + (b - a) * fy);
+  }
+}
+// local coordinates (meters within a body): sx along the line, ysc = vertical meters per row / f
+function colFbmLocal(out, seed, sx, f, cmax, ysc) {
+  out.fill(0);
+  const o = Math.log2(f * 1.5), n0 = Math.ceil(o), t = n0 - o, ncap = Math.log2(cmax);
+  let nTop = n0 + 4, capped = false;
+  if (ncap < nTop) { nTop = Math.floor(ncap); capped = true; }
+  if (nTop < n0) { out.fill(0.5); return; }
+  let ws = 0;
+  for (let n = nTop; n >= n0; n--) {
+    const cell = Math.pow(2, n);
+    let w = Math.pow(0.55, o + 4.5 - n);
+    if (n === n0) w *= t;
+    if (n === n0 + 4 && !capped) w *= (1 - t);
+    if (capped) w *= Math.min(1, ncap - n + 1);
+    if (w <= 0) continue;
+    const q = sx / cell, ix = Math.floor(q), hi = Math.floor(ix / TWO32), lo = ix - hi * TWO32;
+    colOctave(out, lo, hi, q - ix, n, seed, f * ysc / cell, w); ws += w;
+  }
+  if (ws > 0) for (let y = 0; y < Hb; y++) out[y] /= ws; else out.fill(0.5);
+}
+// absolute coordinates (exact cell indices derived from the BigInt position)
+function colFbmAbs(out, set, Lmm, seed, ymm) {
+  out.fill(0);
+  for (let i = 0; i < set.length; i++) {
+    const o = set[i]; if (o.w <= 0) continue;
+    const q = (o.r0 + Lmm) / o.cell, j = Math.floor(q);
+    let lo = o.lo + j, carry = Math.floor(lo / TWO32); lo -= carry * TWO32;
+    colOctave(out, lo, o.hi + carry, q - j, o.n, seed, ymm / o.cell, o.w);
+  }
+}
+// smooth periodic table used for vertical streaks
+const STREAK = new Float32Array(64);
+(() => { const k = []; for (let i = 0; i < 8; i++) k.push(h4(i, 7, 7, 99));
+  for (let i = 0; i < 64; i++) { const q = i / 8, j = Math.floor(q), f = sstep(q - j);
+    STREAK[i] = k[j % 8] + (k[(j + 1) % 8] - k[j % 8]) * f; } })();
+
+/* ===================== colors ===================== */
+function tempRGB(K) {
+  const t = K / 100; let r, g, b;
+  if (t <= 66) { r = 255; g = 99.47 * Math.log(t) - 161.12; b = t <= 19 ? 0 : 138.52 * Math.log(t - 10) - 305.04; }
+  else { r = 329.7 * Math.pow(t - 60, -0.1332); g = 288.12 * Math.pow(t - 60, -0.0755); b = 255; }
+  const cl = v => Math.max(0, Math.min(255, v));
+  return [cl(r), cl(g), cl(b)];
+}
+
+function satBoost(c, k) { const m = (c[0] + c[1] + c[2]) / 3; return c.map(v => Math.max(0, Math.min(255, m + (v - m) * k))); }
+/* ===================== world data ===================== */
+const ly = v => v * LY;
+const rs = msun => msun * RS_PER_MSUN;
+let BODIES = [];
+function star(n, dly, rsun, T, tier, extra) { BODIES.push(Object.assign({ n, x: fromSun(ly(dly)), r: rsun * RSUN, k: 'star', T, tier }, extra || {})); }
+function bh(n, x, msun, tier, extra) { BODIES.push(Object.assign({ n, x, r: rs(msun), k: 'bh', tier }, extra || {})); }
+
+// Solar system (distances are mean distances from the Sun; Earth is the origin)
+BODIES.push(
+  { n: 'Sun', x: SUN_X, r: 6.957e8, k: 'star', T: 5772, sun: true, tier: 0,
+    layers: [[6.957e8, 6.957e8 + 2.0e6, [255, 110, 80], 0.85, 0.65], [6.957e8 + 2.0e6, 3 * 6.957e8, [255, 226, 180], 0.5, 0]] },
+  { n: 'Mercury', x: fromSun(0.387098 * AU), r: 2439.7 * KM, k: 'rock', tier: 1 },
+  { n: 'Venus', x: fromSun(0.723332 * AU), r: 6051.8 * KM, k: 'venus', tier: 1,
+    layers: [[6051.8 * KM, 6121.8 * KM, [236, 214, 150], 0.65, 0.45], [6121.8 * KM, 6301.8 * KM, [236, 214, 150], 0.3, 0]] },
+  { n: 'Earth', x: 0, r: RE, k: 'earth', tier: 0,
+    layers: [[RE, RE + 12e3, [140, 190, 255], 0.8, 0.7], [RE + 12e3, RE + 50e3, [95, 140, 240], 0.55, 0.45],
+             [RE + 50e3, RE + 85e3, [80, 95, 210], 0.38, 0.3], [RE + 85e3, RE + 600e3, [90, 215, 170], 0.2, 0.08],
+             [RE + 600e3, RE + 10000e3, [120, 140, 230], 0.08, 0]] },
+  { n: 'ISS', x: RE + 420 * KM, r: 54.5, k: 'probe', tier: 2 },
+  { n: 'Moon', x: 384400 * KM, r: 1737.4 * KM, k: 'moon', tier: 0 },
+  { n: 'James Webb Space Telescope', x: 1.5e9, r: 10.6, k: 'probe', gold: true, tier: 2 },
+  { n: 'Mars', x: fromSun(1.523679 * AU), r: 3389.5 * KM, k: 'mars', tier: 1,
+    layers: [[3389.5 * KM, 3469.5 * KM, [230, 160, 120], 0.22, 0]] },
+  { n: 'Ceres', x: fromSun(2.767 * AU), r: 469.7 * KM, k: 'rock', tier: 2 },
+  { n: 'Jupiter', x: fromSun(5.2044 * AU), r: 69911 * KM, k: 'jupiter', tier: 0 },
+  { n: 'Saturn', x: fromSun(9.5826 * AU), r: 58232 * KM, k: 'saturn', tier: 0,
+    layers: [[66900 * KM, 74510 * KM, [215, 195, 150], 0.08, 0.08], [74658 * KM, 92000 * KM, [200, 180, 140], 0.28, 0.28],
+             [92000 * KM, 117580 * KM, [225, 205, 160], 0.75, 0.75], [117580 * KM, 122170 * KM, [200, 180, 140], 0.05, 0.05],
+             [122170 * KM, 136775 * KM, [215, 195, 150], 0.5, 0.5], [140130 * KM, 140230 * KM, [230, 215, 180], 0.4, 0.4]] },
+  { n: 'Uranus', x: fromSun(19.19126 * AU), r: 25362 * KM, k: 'uranus', tier: 1 },
+  { n: 'Neptune', x: fromSun(30.07 * AU), r: 24622 * KM, k: 'neptune', tier: 1 },
+  { n: 'Pluto', x: fromSun(39.482 * AU), r: 1188.3 * KM, k: 'pluto', tier: 1 },
+  { n: 'Voyager 1', x: fromSun(172 * AU), r: 1.85, k: 'probe', tier: 2 }
+);
+// Stars: true distance from the Sun (ly), radius (solar radii), temperature (K)
+star('Proxima Centauri', 4.2465, 0.1542, 3042, 1);
+star('Alpha Centauri A', 4.344, 1.2175, 5790, 1);
+BODIES.push({ n: 'Alpha Centauri B', x: fromSun(ly(4.344) + 23.4 * AU), r: 0.8591 * RSUN, k: 'star', T: 5260, tier: 2 });
+star('Barnard’s Star', 5.963, 0.187, 3195, 2);
+star('Wolf 359', 7.86, 0.144, 2800, 2);
+star('Lalande 21185', 8.31, 0.392, 3550, 2);
+star('Sirius A', 8.60, 1.711, 9940, 1);
+BODIES.push({ n: 'Sirius B', x: fromSun(ly(8.60) + 20 * AU), r: 0.0084 * RSUN, k: 'star', T: 25000, tier: 2 });
+star('Epsilon Eridani', 10.47, 0.735, 5084, 2);
+star('Procyon', 11.46, 2.048, 6530, 2);
+star('Tau Ceti', 11.91, 0.793, 5344, 2);
+star('Altair', 16.73, 1.79, 7670, 2);
+star('Vega', 25.04, 2.36, 9600, 1);
+star('Fomalhaut', 25.13, 1.84, 8590, 2);
+star('Pollux', 33.78, 9.06, 4586, 2);
+star('Arcturus', 36.7, 25.4, 4286, 1);
+star('Capella', 42.9, 11.98, 4970, 2);
+star('Aldebaran', 65.3, 45.1, 3910, 1);
+star('Regulus', 79.3, 4.35, 12460, 2);
+star('Spica', 250, 7.47, 25300, 2);
+star('Canopus', 310, 71, 7400, 2);
+star('Polaris', 433, 37.5, 6015, 1);
+BODIES.push({ n: 'Pleiades', x: fromSun(ly(444)), r: ly(43), k: 'cluster', tier: 1 });
+star('Betelgeuse', 548, 764, 3600, 0);
+star('Antares', 550, 680, 3660, 1);
+star('Rigel', 860, 78.9, 12100, 1);
+BODIES.push({ n: 'Orion Nebula', x: fromSun(ly(1344)), r: ly(12), k: 'neb', c1: [255, 105, 140], c2: [90, 210, 220], tier: 1 });
+star('Deneb', 2600, 203, 8525, 1);
+star('VY Canis Majoris', 3820, 1420, 3490, 1);
+BODIES.push({ n: 'Crab Nebula', x: fromSun(ly(6500)), r: ly(5.5), k: 'neb', c1: [255, 150, 90], c2: [110, 170, 255], tier: 1 });
+BODIES.push({ n: 'Crab Pulsar', x: fromSun(ly(6500)), r: 10 * KM, k: 'star', T: 1e6, tier: 2 });
+BODIES.push({ n: 'Eagle Nebula', x: fromSun(ly(7000)), r: ly(35), k: 'neb', c1: [120, 220, 160], c2: [240, 190, 90], tier: 1 });
+bh('Cygnus X-1', fromSun(ly(7220)), 21.2, 2);
+BODIES.push({ n: 'Omega Centauri', x: fromSun(ly(17090)), r: ly(75), k: 'cluster', tier: 1 });
+const SGR_X = fromSun(ly(26670));
+bh('Sagittarius A*', SGR_X, 4.30e6, 0);
+BODIES.push({ n: 'Tarantula Nebula', x: fromSun(ly(160000)), r: ly(300), k: 'neb', c1: [255, 120, 150], c2: [150, 200, 255], tier: 1 });
+BODIES.push({ n: 'SN 1987A', x: fromSun(ly(168000)), r: ly(0.65), k: 'neb', c1: [255, 200, 150], c2: [255, 120, 120], tier: 2 });
+bh('M31*', fromSun(ly(2.537e6)), 1.4e8, 1);
+bh('M81*', fromSun(ly(11.8e6)), 7e7, 2);
+bh('Centaurus A*', fromSun(ly(13e6)), 5.5e7, 2);
+bh('M104*', fromSun(ly(31.1e6)), 1e9, 2);
+bh('M87*', fromSun(ly(53.5e6)), 6.5e9, 0);
+bh('3C 273*', fromSun(ly(2.44e9)), 8.86e8, 1, { quasar: true });
+BODIES.push({ n: '3C 273 jet', x: fromSun(ly(2.44e9 + 120000)), r: ly(80000), k: 'neb', c1: [130, 170, 255], c2: [200, 220, 255], jet: true, tier: 2 });
+bh('TON 618*', fromSun(ly(10.8e9)), 4.07e10, 1, { quasar: true });
+
+const GALAXIES = [
+  { n: 'Milky Way', x: SGR_X, R: ly(50000), k: 'spiral', h: ly(9000), bar: ly(16000), tier: 0,
+    arms: [-44700, -33070, -26670, -21470, -16870, -13670, -9800, 9800, 14000, 20000, 32000, 44000].map(ly) },
+  { n: 'Large Magellanic Cloud', x: fromSun(ly(163000)), R: ly(16100), k: 'irr', tier: 1 },
+  { n: 'Small Magellanic Cloud', x: fromSun(ly(203000)), R: ly(9450), k: 'irr', tier: 1 },
+  { n: 'Andromeda Galaxy', x: fromSun(ly(2.537e6)), R: ly(76000), k: 'spiral', tier: 0 },
+  { n: 'Triangulum Galaxy', x: fromSun(ly(2.73e6)), R: ly(30550), k: 'spiral', tier: 1 },
+  { n: 'Cigar Galaxy (M82)', x: fromSun(ly(11.4e6)), R: ly(18500), k: 'starburst', tier: 2 },
+  { n: 'Bode’s Galaxy (M81)', x: fromSun(ly(11.8e6)), R: ly(45000), k: 'spiral', tier: 1 },
+  { n: 'Centaurus A', x: fromSun(ly(13e6)), R: ly(30000), k: 'elliptical', tier: 1 },
+  { n: 'Pinwheel Galaxy (M101)', x: fromSun(ly(20.9e6)), R: ly(85000), k: 'spiral', tier: 1 },
+  { n: 'Whirlpool Galaxy (M51)', x: fromSun(ly(31e6)), R: ly(38450), k: 'spiral', tier: 1 },
+  { n: 'Sombrero Galaxy (M104)', x: fromSun(ly(31.1e6)), R: ly(24500), k: 'spiral', tier: 2 },
+  { n: 'M87', x: fromSun(ly(53.5e6)), R: ly(66000), k: 'elliptical', tier: 0 },
+  { n: 'Quasar 3C 273', x: fromSun(ly(2.44e9)), R: ly(50000), k: 'quasar', tier: 0 },
+  { n: 'Quasar TON 618', x: fromSun(ly(10.8e9)), R: ly(50000), k: 'quasar', tier: 0 },
+  { n: 'GN-z11', x: fromSun(ly(13.4e9)), R: ly(2000), k: 'early', tier: 1 },
+  { n: 'JADES-GS-z14-0', x: fromSun(ly(13.5e9)), R: ly(850), k: 'early', tier: 1 },
+];
+const REGIONS = [
+  { n: 'Heliosphere', x: SUN_X, hw: 121.6 * AU, k: 'helio', edge: 'Heliopause', tier: 1 },
+  { n: 'Asteroid belt', x: fromSun(2.665 * AU), hw: 0.605 * AU, k: 'abelt', tier: 2 },
+  { n: 'Kuiper belt', x: fromSun(40 * AU), hw: 10 * AU, k: 'kuiper', tier: 1 },
+  { n: 'Oort cloud', x: SUN_X, hw: 100000 * AU, hin: 2000 * AU, k: 'oort', tier: 1 },
+  { n: 'Local Group', x: fromSun(ly(1.0e6)), hw: ly(5e6), k: 'group', tier: 1 },
+  { n: 'Virgo Cluster', x: fromSun(ly(53.8e6)), hw: ly(7.5e6), k: 'cluster', tier: 0 },
+  { n: 'Norma Cluster', x: fromSun(ly(222e6)), hw: ly(5e6), k: 'cluster', tier: 1 },
+  { n: 'Coma Cluster', x: fromSun(ly(321e6)), hw: ly(10e6), k: 'cluster', tier: 1 },
+  { n: 'Boötes Void', x: fromSun(ly(700e6)), hw: ly(165e6), k: 'void', tier: 1 },
+];
+
+BODIES.forEach((b, i) => {
+  b.id = i; b.xmm = toMM(b.x);
+  b.rh = b.r;
+  if (b.layers) for (const L of b.layers) b.rh = Math.max(b.rh, L[1]);
+  if (b.k === 'bh') { b.rh = b.r * (b.quasar ? 2000 : 6);
+    b.layers = [[b.r, 1.5 * b.r, [255, 236, 205], 0.95, 0.55], [1.5 * b.r, 6 * b.r, [255, 150, 70], 0.55, 0]];
+    if (b.quasar) b.layers.push([6 * b.r, 2000 * b.r, [190, 210, 255], 0.5, 0]); }
+  if (b.k === 'star') { b.col = satBoost(tempRGB(b.T), 1.6); if (b.sun) b.col = [255, 200, 80]; if (!b.layers) { b.layers = [[b.r, 1.6 * b.r, b.col, 0.3, 0]]; b.rh = 1.6 * b.r; } }
+  b.mcol = b.k === 'star' ? b.col : b.k === 'bh' ? [255, 160, 80] : b.k === 'neb' ? b.c1 :
+    ({ earth: [90, 150, 255], moon: [200, 200, 205], mars: [220, 110, 70], venus: [235, 215, 160], rock: [170, 165, 160],
+       jupiter: [220, 185, 140], saturn: [230, 210, 160], uranus: [160, 220, 230], neptune: [90, 130, 240], pluto: [215, 190, 165],
+       probe: [220, 220, 230], cluster: [170, 200, 255] })[b.k] || [220, 220, 220];
+});
+GALAXIES.forEach((g, i) => { g.id = i; g.xmm = toMM(g.x); if (!g.h) g.h = g.R / 3.5; });
+REGIONS.forEach(r => { r.xmm = toMM(r.x); });
+const BH_OF = {}; // galaxy name -> bh body
+for (const g of GALAXIES) { let best = null; for (const b of BODIES) if (b.k === 'bh' && Math.abs(b.x - g.x) < g.R * 0.01) best = b; g.bh = best; }
+
+// landmarks for "next" readouts
+const MARKS = BODIES.filter(b => b.k !== 'neb' || !b.jet).map(b => ({ n: b.n, xmm: b.xmm, r: b.r, tier: b.tier }))
+  .concat(GALAXIES.map(g => ({ n: g.n, xmm: g.xmm, r: 0, tier: g.tier, gal: g })))
+  .sort((a, b) => (a.xmm < b.xmm ? -1 : a.xmm > b.xmm ? 1 : 0));
+
+/* ===================== galaxy light profiles ===================== */
+function galRho(g, s) {
+  const a = Math.abs(s), q = a / g.R;
+  if (q > 1.05) return 0;
+  const taper = 1 - smooth(0.82, 1.05, q);
+  let rho;
+  if (g.k === 'spiral') {
+    rho = Math.exp(-a / g.h) * 0.55 + 1.4 * Math.exp(-Math.pow(s / (0.045 * g.R), 2));
+    if (g.bar) rho += 0.25 * (1 - smooth(0.7 * g.bar, g.bar, a));
+    let arm = 0;
+    if (g.arms) { for (const m of g.arms) { const z = (s - m) / (0.035 * g.R); arm += Math.exp(-z * z); } }
+    else { const ph = (q * 3.5) % 1; arm = 0.7 * Math.exp(-Math.pow((ph - 0.5) / 0.2, 2)) * smooth(0.12, 0.25, q); }
+    rho += 0.35 * arm * Math.exp(-q * 1.2);
+    g._arm = arm;
+  } else if (g.k === 'elliptical') {
+    rho = 2.5 * Math.exp(-4.2 * Math.sqrt(q)); g._arm = 0;
+  } else if (g.k === 'quasar') {
+    rho = 0.6 * Math.exp(-a / (g.R / 4)) + 2.5 / (1 + Math.pow(s / (g.R / 400), 2)); g._arm = 0.9;
+  } else if (g.k === 'early') {
+    rho = 1.2 * Math.exp(-a / (g.R / 3)); g._arm = 0.6;
+  } else { // irregular / starburst
+    rho = 0.9 * Math.exp(-a / (g.R / 2.2)) + (g.k === 'starburst' ? 1.3 * Math.exp(-Math.pow(s / (0.12 * g.R), 2)) : 0); g._arm = 0.4;
+  }
+  return rho * taper;
+}
+
+/* ===================== state ===================== */
+const S = {
+  eta: 0, tau: 0, xmm: START_MM, xfrac: 0, tus: 0n, tfrac: 0,
+  brake: false, mode: 'inst', zoomExp: 0, logWa: Math.log10(W_MIN),
+  paused: false, arrived: false, fromEarth: true, thr: T10, lastDir: 1, ramp: 0, launched: false, nextName: '', tsc: 0, tgt: 0, tgtP: 0, aNow: 0, aDir: 0,
+};
+const held = { L: false, R: false };
+function accelCap() { return S.thr === T10 ? A_MAX : G0 * Math.pow(10, S.thr / 100); }
+function accel() { return G0 * Math.pow(accelCap() / G0, S.ramp); }
+
+function addX(dm) {
+  if (!isFinite(dm)) dm = dm > 0 ? 1e30 : -1e30;
+  const v = dm * 1000 + S.xfrac;
+  if (Math.abs(v) < 4e15) { const w = Math.trunc(v); S.xfrac = v - w; S.xmm += BigInt(w); }
+  else { S.xmm += BigInt(Math.trunc(v)); S.xfrac = 0; }
+}
+function addT(ds) {
+  const v = ds * 1e6 + S.tfrac;
+  if (Math.abs(v) < 4e15) { const w = Math.trunc(v); S.tfrac = v - w; S.tus += BigInt(w); }
+  else { S.tus += BigInt(Math.trunc(v)); S.tfrac = 0; }
+}
+// exact constant-proper-acceleration step; al = a/c (signed), units 1/s
+function step(dtau, al) {
+  if (!(dtau > 0)) return;
+  const h = al * dtau / 2;
+  const sf = Math.abs(h) < 1e-5 ? 1 + h * h / 6 : Math.sinh(h) / h;
+  const m = S.eta + h;
+  addX(C * dtau * sf * Math.sinh(m));
+  addT(dtau * sf * Math.cosh(m));
+  S.eta += 2 * h; S.tau += dtau;
+}
+// split a burn so each exact step changes rapidity by at most 0.5 (keeps cosh finite at huge thrust)
+function stepN(dt, al) {
+  const n = Math.min(5000, Math.max(1, Math.ceil(Math.abs(al) * dt / 0.5))), h = dt / n;
+  for (let i = 0; i < n; i++) { step(h, al); if (S.xmm >= EDGE_MM || S.xmm <= -EDGE_MM) break; }
+}
+// Cruise-speed slider p in [-1000, 1000]: log-uniform in proper velocity, sinh(eta) = 10^(A + B|p|/1000).
+// About 1 m/s near the center, gamma = 2e19 at the ends; at high speed this is uniform in rapidity.
+const U_A = -8.5, U_B = 27.8;
+function etaOfSlider(p) { const u = Math.abs(p) / 1000; if (u < 0.004) return 0; return Math.sign(p) * Math.asinh(Math.pow(10, U_A + U_B * u)); }
+function setTarget(p) {
+  p = Math.max(-1000, Math.min(1000, p)); S.tgtP = p; S.tgt = etaOfSlider(p);
+  const th = document.getElementById('thr'); if (th && Math.round(+th.value) !== Math.round(p)) th.value = p;
+  if (S.tgt !== 0) S.lastDir = Math.sign(S.tgt);
+}
+function physics(dtau, dwall = dtau) {
+  if (S.arrived) return;
+  const dir = (held.R ? 1 : 0) - (held.L ? 1 : 0);
+  if (dir !== 0) S.brake = false;                          // pushing either way cancels a stop
+  const burning = dir !== 0 || (S.brake && S.eta !== 0);
+  // thrust builds from 1 g to the 10-minute pace over RAMP_T while burning, and winds down when coasting
+  S.ramp = burning ? Math.min(1, S.ramp + dtau / RAMP_T) : Math.max(0, S.ramp - 2 * dtau / RAMP_T);
+  if (dir !== 0 && !S.launched) { S.launched = true; const hn = $('hint'); if (hn) hn.hidden = true; }
+  const x0 = S.xmm;
+  const a = accel();
+  S.aNow = burning ? a : 0;
+  if (dir !== 0) { S.lastDir = dir; S.aDir = dir; stepN(dtau, dir * a / C); }
+  else if (S.brake && S.eta !== 0) {
+    const al = -Math.sign(S.eta) * a / C, tz = Math.abs(S.eta / al);
+    S.aDir = -Math.sign(S.eta);
+    if (tz <= dtau) { step(tz, al); S.eta = 0; S.brake = false; step(dtau - tz, 0); }
+    else stepN(dtau, al);
+  } else { S.brake = false; S.aDir = 0; step(dtau, 0); }
+  if (S.eta > ETA_MAX) S.eta = ETA_MAX; else if (S.eta < -ETA_MAX) S.eta = -ETA_MAX;
+  passCheck(x0, S.xmm);
+  if (S.xmm >= EDGE_MM || S.xmm <= -EDGE_MM) arrive();
+}
+function arrive() {
+  const right = S.xmm > 0n;
+  S.xmm = right ? EDGE_MM : -EDGE_MM; S.xfrac = 0; S.arrived = true;
+  held.L = held.R = false; setTarget(0);
+  $('bTitle').textContent = 'You reached the edge of the observable universe';
+  $('bText').textContent = `Your clock reads ${fmtClock(S.tau)}. The Earth-frame clock reads ${fmtTime(earthTime())}. ` +
+    `Beyond this wall the light has not had time to reach Earth, so there is nothing to map.`;
+  $('banner').hidden = false;
+}
+// announce landmarks as you pass them
+let toastT = 0;
+function passCheck(x0, x1) {
+  if (x0 === x1) return;
+  const lo = x0 < x1 ? x0 : x1, hi = x0 < x1 ? x1 : x0;
+  let best = null, n = 0;
+  for (const mk of MARKS) if (mk.xmm > lo && mk.xmm <= hi) { n++; if (!best || mk.tier < best.tier) best = mk; }
+  if (!best || best.tier > 1) return;
+  const now = performance.now();
+  if (now - toastT < 1200 && best.tier > 0) return;
+  toastT = now;
+  const t = $('toast'); if (!t) return;
+  t.textContent = n > 1 ? `Passed ${best.n} and ${n - 1} more` : `Passing ${best.n}`;
+  t.hidden = false; clearTimeout(t._h); t._h = setTimeout(() => { t.hidden = true; }, 1800);
+}
+function resetAt(xmm, zoomExp, fromEarth) {
+  S.xmm = xmm; S.xfrac = 0; S.eta = 0; S.tau = 0; S.tus = 0n; S.tfrac = 0; S.brake = false; S.ramp = 0; S.tsc = 0; S.tgt = 0; S.tgtP = 0; S.aNow = 0; S.aDir = 0; { const th = document.getElementById('thr'); if (th) th.value = 0; }
+  S.arrived = false; S.zoomExp = 0; S.logWa = Math.log10(W_MIN); S.fromEarth = fromEarth;
+  $('banner').hidden = true;
+}
+const earthTime = () => Number(S.tus) / 1e6 + S.tfrac / 1e6;
+
+/* ===================== formatting ===================== */
+const SUPD = { '-': '⁻', '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹' };
+const sup = n => String(n).split('').map(c => SUPD[c] || c).join('');
+function sci(x, d = 2) {
+  if (x === 0) return '0'; if (!isFinite(x)) return '∞';
+  let e = Math.floor(Math.log10(Math.abs(x))), m = x / Math.pow(10, e);
+  if (Math.abs(+m.toFixed(d)) >= 10) { m /= 10; e += 1; }
+  return `${m.toFixed(d)}×10${sup(e)}`;
+}
+function num(x, sig = 4) {
+  const a = Math.abs(x);
+  if (a !== 0 && (a < 1e-3 || a >= 1e15)) return sci(x, sig - 1);
+  return x.toLocaleString('en-US', { maximumSignificantDigits: sig });
+}
+function fmtLen(m, sig = 4) {
+  const a = Math.abs(m);
+  if (a < 1e-3) return a === 0 ? '0 m' : sci(m, 2) + ' m';
+  if (a < 1e3) return num(m, sig) + ' m';
+  if (a < 0.05 * AU) return num(m / 1e3, sig) + ' km';
+  if (a < 0.05 * LY) return num(m / AU, sig) + ' AU';
+  const l = m / LY;
+  if (Math.abs(l) < 1e6) return num(l, sig) + ' ly';
+  if (Math.abs(l) < 1e9) return num(l / 1e6, sig) + ' million ly';
+  if (Math.abs(l) < 1e13) return num(l / 1e9, sig) + ' billion ly';
+  return sci(l, sig - 1) + ' ly';
+}
+function fmtTime(s, sig = 4) {
+  const a = Math.abs(s);
+  if (a < 60) return s.toFixed(1) + ' s';
+  if (a < 3600) return `${Math.floor(s / 60)} min ${Math.floor(s % 60)} s`;
+  if (a < 86400) return num(s / 3600, 3) + ' hours';
+  if (a < YEAR) return num(s / 86400, 3) + ' days';
+  const y = s / YEAR;
+  if (y < 1e6) return num(y, sig) + ' years';
+  if (y < 1e9) return num(y / 1e6, sig) + ' million years';
+  return num(y / 1e9, sig) + ' billion years';
+}
+function fmtClock(s) {
+  s = Math.round(s * 10) / 10;
+  const m = Math.floor(s / 60), r = s - m * 60;
+  if (m >= 60) { const h = Math.floor(m / 60); return `${h}:${String(m % 60).padStart(2, '0')}:${r.toFixed(0).padStart(2, '0')}`; }
+  return `${m}:${r.toFixed(1).padStart(4, '0')}`;
+}
+function fmtG(a) { const g = a / G0; return g < 1000 ? `${num(g, 3)} g` : `${sci(g, 2)} g`; }
+function bandName(D) {
+  const lam = 550e-9 / D;
+  if (lam < 1e-11) return 'gamma rays';
+  if (lam < 1e-8) return 'X-rays';
+  if (lam < 380e-9) return 'ultraviolet';
+  if (lam <= 750e-9) return 'visible';
+  if (lam < 1e-3) return 'infrared';
+  if (lam < 1) return 'microwaves';
+  return 'radio';
+}
+
+/* ===================== Doppler color matrix ===================== */
+function dopplerMatrix(lnD) {
+  const lg = lnD / Math.LN2;
+  if (Math.abs(lg) < 0.005) return null;
+  const th = Math.max(-1, Math.min(1, lg)) * 250 * Math.PI / 180;
+  const a = Math.cos(th), b = Math.sin(th);
+  const H = [0.213 + 0.787 * a - 0.213 * b, 0.715 - 0.715 * a - 0.715 * b, 0.072 - 0.072 * a + 0.928 * b,
+             0.213 - 0.213 * a + 0.143 * b, 0.715 + 0.285 * a + 0.140 * b, 0.072 - 0.072 * a - 0.283 * b,
+             0.213 - 0.213 * a - 0.787 * b, 0.715 - 0.715 * a + 0.715 * b, 0.072 + 0.928 * a + 0.072 * b];
+  const s = Math.min(1, Math.abs(lg) / 1.2);
+  const tint = lg > 0 ? [0.75, 0.88, 1.2] : [1.2, 0.72, 0.58];
+  const vis = Math.abs(lg) < 0.9 ? 1 : Math.exp(-(Math.abs(lg) - 0.9) * 2.2);
+  const gh = lg > 0 ? [0.62, 0.64, 0.98] : [0.95, 0.46, 0.40];
+  const lum = [0.2126, 0.7152, 0.0722];
+  const M = new Float32Array(9);
+  for (let i = 0; i < 3; i++) {
+    const t = 1 + (tint[i] - 1) * s;
+    for (let j = 0; j < 3; j++) M[i * 3 + j] = vis * t * H[i * 3 + j] + (1 - vis) * gh[i] * lum[j];
+  }
+  return M;
+}
+function applyM(M, c) {
+  if (!M) return c;
+  return [M[0] * c[0] + M[1] * c[1] + M[2] * c[2], M[3] * c[0] + M[4] * c[1] + M[5] * c[2], M[6] * c[0] + M[7] * c[1] + M[8] * c[2]];
+}
+
+/* ===================== rendering setup ===================== */
+const $ = id => document.getElementById(id);
+const cv = $('cv'), ctx = cv.getContext('2d');
+const off = document.createElement('canvas'), octx = off.getContext('2d');
+let cssW = 0, cssH = 0, dpr = 1, Wc = 0, Hb = 112, img = null, buf = null, Lc = null;
+let bandY = 0, bandH = 0, VIG = null;
+function resize() {
+  const r = $('view').getBoundingClientRect();
+  dpr = Math.min(2, window.devicePixelRatio || 1);
+  cssW = Math.max(1, r.width); cssH = Math.max(1, r.height);
+  cv.width = Math.round(cssW * dpr); cv.height = Math.round(cssH * dpr);
+  Wc = Math.max(120, Math.min(document.documentElement.dataset.layout === 'desktop' ? 720 : 400, Math.round(cssW)));
+  bandH = Math.max(70, Math.min(620, cssH - 128));
+  Hb = Math.max(64, Math.min(180, Math.round(bandH * Wc / cssW * 0.72)));
+  VIG = new Float32Array(Hb); for (let y = 0; y < Hb; y++) VIG[y] = Math.sin(Math.PI * (y + 0.5) / Hb);
+  off.width = Wc; off.height = Hb;
+  img = octx.createImageData(Wc, Hb); buf = img.data; Lc = new Float64Array(Wc);
+  bandY = Math.round(Math.max(60, Math.min(cssH - bandH - 80, (cssH - bandH) / 2 - 8)));
+}
+window.addEventListener('resize', resize);
+new ResizeObserver(() => resize()).observe(document.getElementById('view'));
+
+/* absolute-coordinate octave data: exact cell indices from the BigInt position */
+function octaveSet(fmm, fixedN) {
+  const set = [];
+  let ns, o = 0, t = 0;
+  if (fixedN) ns = fixedN;
+  else { o = Math.log2(Math.max(1, fmm * 3)); const n0 = Math.max(0, Math.ceil(o)); t = n0 - o; ns = [n0, n0 + 1, n0 + 2, n0 + 3, n0 + 4, n0 + 5]; }
+  let ws = 0;
+  for (let i = 0; i < ns.length; i++) {
+    const n = ns[i], nb = BigInt(n);
+    const k0 = S.xmm >> nb;
+    const r0 = Number(S.xmm - (k0 << nb));
+    const lo = Number(BigInt.asUintN(32, k0));
+    const hi = Number(BigInt.asIntN(32, k0 >> 32n)) ^ Number(BigInt.asIntN(32, k0 >> 64n)) * 0x9E3779B1;
+    let w = fixedN ? 1 : Math.pow(0.62, o + 5.5 - n);
+    if (!fixedN) { if (i === 0) w *= Math.max(0, Math.min(1, t)); if (i === 5) w *= 1 - Math.max(0, Math.min(1, t)); }
+    set.push({ n, cell: Math.pow(2, n), r0, lo, hi: hi | 0, w }); ws += w;
+  }
+  for (const s of set) s.w /= ws || 1;
+  return set;
+}
+function absNoise(set, Lmm, seed) {
+  let sum = 0;
+  for (let i = 0; i < set.length; i++) {
+    const o = set[i];
+    const q = (o.r0 + Lmm) / o.cell;
+    const j = Math.floor(q), fr = sstep(q - j);
+    let lo = o.lo + j, carry = Math.floor(lo / TWO32); lo -= carry * TWO32;
+    const hi = o.hi + carry;
+    const h0 = h4(lo, hi, o.n, seed);
+    const h1 = lo + 1 >= TWO32 ? h4(0, hi + 1, o.n, seed) : h4(lo + 1, hi, o.n, seed);
+    sum += o.w * (h0 + (h1 - h0) * fr);
+  }
+  return sum;
+}
+// one candidate star per finest cell: returns [hash, hashed row in 0..1] if this column holds the star, else null
+function absSpeck(set, Lmm, fmm, seed) {
+  const o = set[0]; const q = (o.r0 + Lmm) / o.cell; const j = Math.floor(q), fr = q - j;
+  let lo = o.lo + j, carry = Math.floor(lo / TWO32); lo -= carry * TWO32; const hi = o.hi + carry;
+  const pos = h4(lo, hi, 2000 + o.n, seed);
+  if (Math.abs(fr - pos) > 0.5 * fmm / o.cell) return null;
+  return [h4(lo, hi, 1000 + o.n, seed), h4(lo, hi, 3000 + o.n, seed)];
+}
+
+/* ===================== body painters ===================== */
+const N1 = new Float32Array(512), N2 = new Float32Array(512), N3 = new Float32Array(512);
+function limb(u) { const z = 2 * u - 1; return Math.sqrt(Math.max(0, 1 - z * z)); }
+// Paint one column of an opaque body into the band buffer.
+function paintColumn(b, c, u, s, f, ysc) {
+  const r = b.r, H = Hb;
+  // Disk: the transverse (vertical) size is never contracted, so a fast-moving body becomes an ellipse.
+  const z0 = 2 * u - 1, zz = z0 * z0, mRow = view.mRow, isStar = b.k === 'star';
+  const put = (y, R, G, B) => {
+    const ym = (y + 0.5 - H / 2) * mRow / r, q = 1 - zz - ym * ym;
+    if (q < 0) return;
+    const k = isStar ? 0.5 + 0.5 * Math.sqrt(q) : 0.62 + 0.38 * Math.pow(q, 0.25);
+    const p = (y * Wc + c) * 4; buf[p] = R * k; buf[p + 1] = G * k; buf[p + 2] = B * k;
+  };
+  const yfOf = y => 0.5 + (y + 0.5 - H / 2) * mRow / (2 * r);
+  const Lm = 1;
+  switch (b.k) {
+    case 'star': {
+      colFbmLocal(N1, b.id, s, f, r * 0.4, ysc);
+      if (b.sun) colFbmLocal(N2, b.id + 50, s, f, r * 0.35, ysc);
+      const L = 1, col = b.col;
+      for (let y = 0; y < H; y++) {
+        const n = N1[y];
+        if (b.sun) {
+          // yellow granules over orange, a few dark spots
+          const g = smooth(0.35, 0.75, n);
+          let R = 245, G = 125 + 105 * g, B = 25 + 75 * g * g;
+          let k = (0.82 + 0.3 * n) * L;
+          if (N2[y] < 0.13) k *= 0.3 + 2 * N2[y];
+          put(y, Math.min(255, R * k), Math.min(255, G * k), Math.min(255, B * k));
+        } else {
+          const k = (0.8 + 0.38 * n) * L;
+          put(y, Math.min(255, col[0] * k), Math.min(255, col[1] * k), Math.min(255, col[2] * k));
+        }
+      }
+      return;
+    }
+    case 'earth': {
+      colFbmLocal(N1, 11, s, f, r * 0.7, ysc); colFbmLocal(N2, 37, s, f, r * 0.25, ysc); colFbmLocal(N3, 23, s * 1.3, f, r * 0.35, ysc * 1.3);
+      for (let y = 0; y < H; y++) {
+        const n = N1[y]; let R, G, B;
+        if (n > 0.55) { const d = N2[y]; if (d > 0.6) { R = 178; G = 148; B = 102; } else { R = 52 + 75 * d; G = 102 + 48 * d; B = 48 + 18 * d; } }
+        else { const dep = (0.55 - n) / 0.55; R = 16 + 14 * (1 - dep); G = 56 + 50 * (1 - dep); B = 122 + 55 * (1 - dep); }
+        const cl = N3[y];
+        if (cl > 0.58) { const a = Math.min(1, (cl - 0.58) * 4) * 0.88; R += (245 - R) * a; G += (248 - G) * a; B += (252 - B) * a; }
+        put(y, R * Lm, G * Lm, B * Lm);
+      }
+      return;
+    }
+    case 'moon': case 'rock': {
+      colFbmLocal(N1, b.id * 7 + 3, s, f, r * 0.5, ysc); colFbmLocal(N2, b.id + 90, s, f, r * 0.6, ysc); colFbmLocal(N3, b.id + 140, s * 2.1, f, r * 0.08, ysc * 2.1);
+      const base = b.k === 'moon' ? [190, 188, 186] : [165, 155, 145];
+      for (let y = 0; y < H; y++) {
+        let k = 0.55 + 0.45 * N1[y];
+        if (b.k === 'moon' && N2[y] < 0.42) k *= 0.62;
+        if (N3[y] > 0.72) k *= 1.25; else if (N3[y] < 0.25) k *= 0.8;
+        k *= Lm; put(y, base[0] * k, base[1] * k, base[2] * k);
+      }
+      return;
+    }
+    case 'mars': {
+      colFbmLocal(N1, 41, s, f, r * 0.6, ysc);
+      for (let y = 0; y < H; y++) {
+        const n = N1[y]; let R = 195 * (0.78 + 0.35 * n), G = 98 * (0.78 + 0.35 * n), B = 58 * (0.8 + 0.3 * n);
+        if (n < 0.38) { R *= 0.6; G *= 0.6; B *= 0.62; }
+        put(y, R * Lm, G * Lm, B * Lm);
+      }
+      return;
+    }
+    case 'venus': {
+      colFbmLocal(N1, 57, s * 0.35, f, r * 0.8, ysc * 2.5 / 0.35);
+      for (let y = 0; y < H; y++) { const k = (0.82 + 0.3 * N1[y]) * Lm; put(y, 232 * k, 206 * k, 146 * k); }
+      return;
+    }
+    case 'jupiter': case 'saturn': {
+      colFbmLocal(N1, b.id + 61, s * 0.3, f, r * 0.8, ysc * 2); colFbmLocal(N2, b.id + 77, s, f, r * 0.05, ysc);
+      const pal = b.k === 'jupiter'
+        ? [[226, 208, 178], [184, 132, 92], [236, 224, 200], [158, 98, 66], [214, 178, 138]]
+        : [[232, 212, 162], [208, 180, 124], [242, 226, 184], [196, 162, 108]];
+      for (let y = 0; y < H; y++) {
+        const yf = yfOf(y), z = yf * (b.k === 'jupiter' ? 11 : 8) + 1.3 * (N1[y] - 0.5);
+        const cc = pal[((Math.floor(z) % pal.length) + pal.length) % pal.length];
+        let R = cc[0], G = cc[1], B = cc[2];
+        if (b.k === 'jupiter') { const dx = (u - 0.62) / 0.085, dy = (yf - 0.66) / 0.075; if (dx * dx + dy * dy < 1) { R = 196; G = 88; B = 60; } }
+        const k = Lm * (0.88 + 0.24 * N2[y]); put(y, R * k, G * k, B * k);
+      }
+      return;
+    }
+    case 'uranus': case 'neptune': {
+      colFbmLocal(N1, b.id + 13, s * 0.4, f, r * 0.7, ysc * 1.5 / 0.4);
+      for (let y = 0; y < H; y++) {
+        const yf = yfOf(y), n = N1[y];
+        let cc = b.k === 'uranus' ? [165, 218, 228] : [62, 102, 222];
+        let k = b.k === 'uranus' ? 0.92 + 0.12 * n : 0.82 + 0.3 * n;
+        if (b.k === 'neptune') { const dx = (u - 0.4) / 0.07, dy = (yf - 0.4) / 0.06; if (dx * dx + dy * dy < 1) k *= 0.55; if (n > 0.74) cc = [220, 232, 255]; }
+        k *= Lm; put(y, cc[0] * k, cc[1] * k, cc[2] * k);
+      }
+      return;
+    }
+    case 'pluto': {
+      colFbmLocal(N1, 83, s, f, r * 0.5, ysc);
+      for (let y = 0; y < H; y++) {
+        const yf = yfOf(y); let R = 196, G = 164, B = 132; const k = (0.75 + 0.35 * N1[y]) * Lm;
+        const dx = (u - 0.55) / 0.2, dy = (yf - 0.52) / 0.32; if (dx * dx + dy * dy < 1) { R = 240; G = 230; B = 214; }
+        put(y, R * k, G * k, B * k);
+      }
+      return;
+    }
+    case 'probe': {
+      const k = 0.75 + 0.25 * Math.abs(Math.sin(u * 20));
+      for (let y = 0; y < H; y++) { if (b.gold) put(y, 230 * k, 186 * k, 90 * k); else put(y, 205 * k, 208 * k, 218 * k); }
+      return;
+    }
+    case 'bh': for (let y = 0; y < H; y++) put(y, 0, 0, 0); return;
+  }
+}
+
+/* ===================== main render ===================== */
+const REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+const view = { W: W_MIN, mpp: 1, gam: 1, eta: 0, real: false, Mr: null, Ml: null };
+function toScreen(L) {
+  if (!view.real) return L / view.gam;
+  return L * Math.exp(view.eta * Math.sign(L));
+}
+function toL(d) {
+  if (!view.real) return d * view.gam;
+  return d * Math.exp(-view.eta * Math.sign(d));
+}
+const visB = [];
+function render() {
+  const eta = S.eta, gam = Math.cosh(eta), beta = Math.tanh(eta), absb = Math.abs(beta);
+  const omb = 2 / (1 + Math.exp(2 * Math.abs(eta)));   // 1 - |beta| without cancellation
+  view.eta = eta; view.gam = gam; view.real = S.mode === 'real';
+  // auto zoom: show ~LOOK seconds of approach
+  // auto zoom: the view's half-width is your speed times 2.5 s (never smaller than the default view),
+  // so things always take ~5 s to cross the screen. Near light speed it stops growing and contraction takes over.
+  const tgt = Math.log10(Math.max(W_MIN, 2.5 * C * Math.abs(Math.tanh(eta))));
+  S.logWa += (tgt - S.logWa) * 0.12;
+  const W = Math.min(1e300, Math.max(5, Math.pow(10, S.logWa + S.zoomExp)));
+  view.W = W; view.mpp = 2 * W / Wc;
+  view.mRow = (2 * W / cssW) * (bandH / Hb); // transverse meters per band row (same scale as the line at rest)
+  view.Mr = view.real ? dopplerMatrix(eta) : null;
+  view.Ml = view.real ? dopplerMatrix(-eta) : null;
+
+  // column positions (galaxy-frame offset from the rocket, meters)
+  for (let c = 0; c < Wc; c++) Lc[c] = toL(((c + 0.5) / Wc * 2 - 1) * W);
+  const fR = Math.abs(toL(view.mpp) - toL(0)) || view.mpp, fL = Math.abs(toL(-view.mpp)) || view.mpp;
+  const setR = octaveSet(fR * 1000), setL = view.real ? octaveSet(fL * 1000) : setR;
+  const webN = [86, 84, 82];
+  const webSet = octaveSet(0, webN);
+
+  // which regions / galaxies touch the view
+  const Lmin = Lc[0] - fL, Lmax = Lc[Wc - 1] + fR;
+  const regs = [];
+  for (const r of REGIONS) { const L = Number(r.xmm - S.xmm) / 1000; if (L + r.hw > Lmin && L - r.hw < Lmax) regs.push([r, L]); }
+  const gals = [];
+  for (const g of GALAXIES) { const L = Number(g.xmm - S.xmm) / 1000; if (L + g.R * 1.05 > Lmin && L - g.R * 1.05 < Lmax) gals.push([g, L]); }
+  const LsunOff = Number(toMM(SUN_X) - S.xmm) / 1000;
+  const LedgeR = Number(EDGE_MM - S.xmm) / 1000, LedgeL = Number(-EDGE_MM - S.xmm) / 1000;
+
+  const rowScale = (bandH / Hb) / (cssW / Wc);
+  // ---------- background ----------
+  for (let c = 0; c < Wc; c++) {
+    const L = Lc[c], right = L >= 0, set = right ? setR : setL, f = right ? fR : fL;
+    const Lmm = L * 1000;
+    let mode = 2; // 0 interplanetary, 1 interstellar, 2 intergalactic, 3 wall
+    let helio = null, oort = 0, belt = 0, clus = 0, voidk = 0, group = 0;
+    if (L > LedgeR || L < LedgeL) mode = 3;
+    else {
+      for (const [r, Lr] of regs) {
+        const s = Math.abs(L - Lr);
+        if (s > r.hw) continue;
+        if (r.k === 'helio') helio = s;
+        else if (r.k === 'oort') { if (s > r.hin) oort = 1; }
+        else if (r.k === 'abelt' || r.k === 'kuiper') belt = r.k === 'kuiper' ? 2 : 1;
+        else if (r.k === 'cluster') clus = Math.max(clus, 1 - (s / r.hw) * (s / r.hw));
+        else if (r.k === 'void') voidk = 1;
+        else if (r.k === 'group') group = 1;
+      }
+      if (helio !== null) mode = 0;
+    }
+    let rho = 0, arm = 0, gal = null;
+    if (mode !== 3) for (const [g, Lg] of gals) { const p = galRho(g, L - Lg); if (p > rho) { rho = p; arm = g._arm; gal = g; } }
+    if (mode === 2 && gal && Math.abs(L - Number(gal.xmm - S.xmm) / 1000) < gal.R) mode = 1;
+    // galaxies seen edge-on: a thin disk (ellipticals and quasar hosts are rounder)
+    const Hg = gal ? gal.R * (gal.k === 'spiral' ? 0.06 : gal.k === 'elliptical' ? 0.7 : 0.4) : 0, mRg = view.mRow;
+
+    colFbmAbs(N1, set, Lmm, 1, f * 1000 * rowScale);
+    const spk = absSpeck(set, Lmm, f * 1000, 3);
+    const hs = spk ? spk[0] : 1, hq = spk ? spk[1] : 0;
+    let br, bg, bb, tr = 0, tg = 0, tb = 0, nebR = 0, nebG = 0, nebB = 0, glR = 0, glG = 0, glB = 0;
+    let speckP = 0;
+    if (mode === 0) {
+      const zs = Math.min(1, Math.pow(AU / Math.max(1, Math.abs(L - LsunOff)), 0.8));
+      br = 36 + 40 * zs; bg = 33 + 30 * zs; bb = 52 + 10 * zs;
+      tr = 26; tg = 22; tb = 30;
+      if (belt) speckP = 0.12 * (1 - Math.exp(-f / 2e5));
+    } else if (mode === 1) {
+      br = 9; bg = 11; bb = 25; tr = 8; tg = 9; tb = 18;
+      const hue = absNoise(webSet, Lmm, 5);
+      nebR = 80 + 90 * hue; nebG = 30 + 50 * (1 - hue); nebB = 70 + 70 * (1 - hue);
+      const g = 1.15 * (1 - Math.exp(-0.9 * rho));
+      const bulge = gal ? Math.exp(-Math.pow((L - Number(gal.xmm - S.xmm) / 1000) / (0.08 * gal.R), 2)) : 0;
+      glR = g * (120 + 90 * bulge); glG = g * (112 + 70 * bulge); glB = g * (150 - 20 * bulge);
+      glR += 30 * arm * g; glG += 40 * arm * g; glB += 80 * arm * g;
+      if (gal && gal.k === 'quasar') { glR *= 0.62; glG *= 0.78; glB *= 1.25; }
+      speckP = Math.min(0.85, 0.06 + 0.5 * rho) * (1 - Math.exp(-f / (0.02 * LY)));
+      if (oort) speckP = Math.max(speckP, 0.05 * (1 - Math.exp(-f / 1e9)));
+    } else if (mode === 2) {
+      const web = absNoise(webSet, Lmm, 7);
+      const w = smooth(0.48, 0.78, web);
+      br = 4 + 5 * group; bg = 4 + 4 * group; bb = 10 + 8 * group;
+      tr = 6; tg = 6; tb = 13;
+      nebR = 46 * w; nebG = 34 * w; nebB = 78 * w;
+      if (clus) { br += 46 * clus; bg += 20 * clus; bb += 62 * clus; }
+      if (voidk) { br *= 0.35; bg *= 0.35; bb *= 0.35; nebR *= 0.25; nebG *= 0.25; nebB *= 0.25; }
+      speckP = (0.03 + 0.05 * clus) * (1 - Math.exp(-f / (3e5 * LY))) * (voidk ? 0.2 : 1);
+      if (rho > 0) { const g = 1 - Math.exp(-0.9 * rho); glR = g * 170; glG = g * 160; glB = g * 190; speckP = Math.max(speckP, Math.min(0.8, 0.4 * rho) * (1 - Math.exp(-f / (0.02 * LY)))); }
+    } else {
+      br = 230; bg = 132; bb = 64; tr = 70; tg = 50; tb = 30;
+    }
+    const speck = hs < Math.min(0.95, speckP * 2.5);
+    const speckRow = Math.floor(hq * Hb);
+    const sc = speck ? satBoost(tempRGB(2600 + 22000 * Math.pow((hs * 7919) % 1, 2)), 1.5) : null;
+    const sk = 0.55 + 0.45 * ((hs * 104729) % 1);
+    for (let y = 0; y < Hb; y++) {
+      const w = N1[y];
+      const vig = 0.72 + 0.28 * VIG[y];
+      let R = br + (w - 0.5) * 2 * tr, G = bg + (w - 0.5) * 2 * tg, B = bb + (w - 0.5) * 2 * tb;
+      if (mode === 1) { const n = smooth(0.56, 0.86, w) * (0.35 + 0.65 * Math.min(1, arm + 0.25)); R += nebR * n; G += nebG * n; B += nebB * n; }
+      else if (mode === 2) { const n = 0.5 + w; R += nebR * n; G += nebG * n; B += nebB * n; }
+      let gm = 0.45 + 1.1 * w * w;
+      if (Hg > 0) { const yq = (y + 0.5 - Hb / 2) * mRg / Hg; gm *= Math.exp(-yq * yq); }
+      R = (R + glR * gm) * vig; G = (G + glG * gm) * vig; B = (B + glB * gm) * vig;
+      if (speck && y === speckRow) { R = sc[0] * sk + R * 0.3; G = sc[1] * sk + G * 0.3; B = sc[2] * sk + B * 0.3; }
+      const p = (y * Wc + c) * 4;
+      buf[p] = R; buf[p + 1] = G; buf[p + 2] = B; buf[p + 3] = 255;
+    }
+  }
+
+  // ---------- bodies ----------
+  visB.length = 0;
+  for (const b of BODIES) {
+    const L = Number(b.xmm - S.xmm) / 1000;
+    const d1 = toScreen(L - b.rh), d2 = toScreen(L + b.rh);
+    if (d2 < -W * 1.02 || d1 > W * 1.02) continue;
+    const dc = toScreen(L), dr1 = toScreen(L - b.r), dr2 = toScreen(L + b.r);
+    visB.push({ b, L, dc, w: Math.abs(dr2 - dr1) / view.mpp, c1: Math.floor((d1 / W + 1) / 2 * Wc), c2: Math.ceil((d2 / W + 1) / 2 * Wc) });
+  }
+  const order = { neb: 0, cluster: 1 };
+  visB.sort((p, q) => (order[p.b.k] ?? 2) - (order[q.b.k] ?? 2) || q.b.rh - p.b.rh);
+  for (const vb of visB) {
+    const b = vb.b, c1 = Math.max(0, vb.c1), c2 = Math.min(Wc - 1, vb.c2);
+    for (let c = c1; c <= c2; c++) {
+      const L = Lc[c], dl = L - vb.L, ad = Math.abs(dl);
+      const f = L >= 0 ? fR : fL;
+      if (b.k === 'neb' || b.k === 'cluster') {
+        if (ad > b.r) continue;
+        const u = (dl + b.r) / (2 * b.r), edge = Math.pow(Math.sin(Math.PI * u), 0.7);
+        if (b.k === 'neb') colFbmLocal(N1, b.id + 200, dl + b.r, f, b.r * 0.5, rowScale);
+        for (let y = 0; y < Hb; y++) {
+          const p = (y * Wc + c) * 4;
+          const ymn = (y + 0.5 - Hb / 2) * view.mRow / b.r, qn = 1 - (dl / b.r) * (dl / b.r) - ymn * ymn;
+          if (qn <= 0) continue;
+          const edge = Math.pow(qn, 0.7);
+          if (b.k === 'neb') {
+            const n = N1[y];
+            const a = smooth(0.36, 0.8, n) * 0.78 * edge * (b.jet ? Math.exp(-Math.pow((y / Hb - 0.5) / 0.12, 2)) : 1);
+            if (a <= 0.003) continue;
+            const m2 = smooth(0.55, 0.85, n);
+            const cr = b.c1[0] + (b.c2[0] - b.c1[0]) * m2, cg = b.c1[1] + (b.c2[1] - b.c1[1]) * m2, cb = b.c1[2] + (b.c2[2] - b.c1[2]) * m2;
+            buf[p] += (cr - buf[p]) * a; buf[p + 1] += (cg - buf[p + 1]) * a; buf[p + 2] += (cb - buf[p + 2]) * a;
+          } else {
+            const cs = 2 * f, ix = Math.floor((dl + b.r) / cs);
+            const hh = h4(ix, y, b.id, 77);
+            if (hh < 0.11 * edge) { const k = 0.6 + 0.4 * h4(ix, y, b.id, 78); buf[p] = 175 * k + 60; buf[p + 1] = 200 * k + 50; buf[p + 2] = 255; }
+            else { buf[p] += 14 * edge; buf[p + 1] += 18 * edge; buf[p + 2] += 30 * edge; }
+          }
+        }
+        continue;
+      }
+      if (b.layers && ad <= b.rh) {
+        // atmospheres, coronas and accretion glows are spherical shells; Saturn's rings are a thin edge-on strip
+        const ring = b.k === 'saturn', mR = view.mRow;
+        for (let y = 0; y < Hb; y++) {
+          const ym = (y + 0.5 - Hb / 2) * mR;
+          if (ring && Math.abs(ym) > Math.max(0.6 * mR, 500)) continue;
+          const rho = ring ? ad : Math.hypot(dl, ym);
+          if (!ring && rho <= b.r) continue;
+          for (const ly_ of b.layers) {
+            if (rho < ly_[0] || rho > ly_[1]) continue;
+            const t = (rho - ly_[0]) / (ly_[1] - ly_[0]);
+            const a = ly_[3] + (ly_[4] - ly_[3]) * (b.k === 'bh' || b.k === 'star' ? Math.sqrt(t) : t);
+            const col = ly_[2], p = (y * Wc + c) * 4;
+            buf[p] += (col[0] - buf[p]) * a; buf[p + 1] += (col[1] - buf[p + 1]) * a; buf[p + 2] += (col[2] - buf[p + 2]) * a;
+            break;
+          }
+        }
+      }
+      if (ad <= b.r) paintColumn(b, c, (dl + b.r) / (2 * b.r), dl + b.r, f, rowScale);
+    }
+  }
+  // ---------- Doppler (real-sight) ----------
+  if (view.real) {
+    for (let c = 0; c < Wc; c++) {
+      const M = Lc[c] >= 0 ? view.Mr : view.Ml; if (!M) continue;
+      for (let y = 0; y < Hb; y++) {
+        const p = (y * Wc + c) * 4, r = buf[p], g = buf[p + 1], b = buf[p + 2];
+        buf[p] = M[0] * r + M[1] * g + M[2] * b; buf[p + 1] = M[3] * r + M[4] * g + M[5] * b; buf[p + 2] = M[6] * r + M[7] * g + M[8] * b;
+      }
+    }
+  }
+  octx.putImageData(img, 0, 0);
+
+  // ---------- compose ----------
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.fillStyle = '#05060d'; ctx.fillRect(0, 0, cssW, cssH);
+  ctx.imageSmoothingEnabled = true;
+  ctx.drawImage(off, 0, 0, Wc, Hb, 0, bandY, cssW, bandH);
+  overlay(regs, gals, LedgeR, LedgeL);
+}
+
+const pxOf = d => (d / view.W + 1) / 2 * cssW;
+function rgbStr(c, a = 1) { return `rgba(${c[0] | 0},${c[1] | 0},${c[2] | 0},${a})`; }
+// Rest-shape ghosts: a dashed circle of each body's true size at rest. Motion squeezes only the direction
+// of travel, so the solid body thins into an ellipse inside its unchanging ghost.
+function drawGhosts() {
+  if (view.real || view.gam < 1.02) return;
+  const k = cssW / (2 * view.W), cy = bandY + bandH / 2;
+  ctx.save(); ctx.beginPath(); ctx.rect(0, bandY, cssW, bandH); ctx.clip();
+  ctx.setLineDash([5, 4]); ctx.lineWidth = 1.2; ctx.strokeStyle = 'rgba(235,240,255,0.5)';
+  for (const v of visB) {
+    const b = v.b; if (b.k === 'neb' || b.k === 'cluster' || b.k === 'probe') continue;
+    const rp = b.r * k; if (rp < 5 || rp > 20 * cssW) continue;
+    const x = pxOf(toScreen(v.L)); if (x + rp < 0 || x - rp > cssW) continue;
+    ctx.beginPath(); ctx.arc(x, cy, rp, 0, 7); ctx.stroke();
+  }
+  ctx.restore();
+}
+// Earth-frame mile markers: ticks evenly spaced in Earth's frame (powers of ten of meters) along the bottom
+// of the view. They bunch together as gamma grows; each finer level fades out as it squeezes shut.
+function drawFence() {
+  if (view.real) return;
+  const g = view.gam, pxPerM = cssW / (2 * view.W) / g, yb = bandY + bandH;
+  const j0 = Math.max(0, Math.ceil(Math.log10(5 / pxPerM)));
+  const half = view.W * g, x0 = Number(S.xmm) / 1000;
+  ctx.save(); ctx.beginPath(); ctx.rect(0, bandY, cssW, bandH); ctx.clip();
+  ctx.font = '500 10.5px "Saira Semi Condensed","Avenir Next Condensed","Roboto Condensed",system-ui,sans-serif';
+  let labelled = false;
+  for (let j = j0 + 2; j >= j0; j--) {
+    const step = Math.pow(10, j), sp = step * pxPerM;
+    if (sp > cssW * 2) continue;
+    const a = Math.min(1, (sp - 5) / 30);
+    const dM = 10n ** BigInt(j + 3);
+    let rem = S.xmm % dM; if (rem < 0n) rem += dM;
+    const first = -Number(rem) / 1000;
+    const kmin = Math.floor((-half - first) / step), kmax = Math.ceil((half - first) / step);
+    if (kmax - kmin > 500) continue;
+    const lvl = j - j0, h = 5 + 5 * lvl;
+    ctx.strokeStyle = `rgba(150,220,255,${(0.3 + 0.2 * lvl) * a})`; ctx.lineWidth = lvl === 2 ? 1.5 : 1;
+    ctx.beginPath();
+    for (let k = kmin; k <= kmax; k++) { const x = pxOf((first + k * step) / g); ctx.moveTo(x, yb); ctx.lineTo(x, yb - h); }
+    ctx.stroke();
+    if (!labelled && sp >= 12) {
+      labelled = true;
+      const SUP = '⁰¹²³⁴⁵⁶⁷⁸⁹';
+      const t = j < 6 ? `Ticks every ${fmtLen(step, 3)} of Earth’s frame` : `Ticks every 10${String(j).split('').map(d => SUP[+d]).join('')} m of Earth’s frame (${fmtLen(step, 3)})`;
+      ctx.fillStyle = 'rgba(175,228,255,0.85)'; ctx.fillText(t, 8, yb - h - 6);
+    }
+  }
+  ctx.restore();
+}
+function overlay(regs, gals, LedgeR, LedgeL) {
+  const labels = [];
+  const W = view.W;
+  // boundaries
+  ctx.save();
+  ctx.setLineDash([3, 4]); ctx.lineWidth = 1;
+  const bounds = [];
+  for (const [r, L] of regs) {
+    if (r.k === 'helio') { bounds.push([L - r.hw, r.edge, r.tier]); bounds.push([L + r.hw, r.edge, r.tier]); }
+    else if (r.k === 'oort') { bounds.push([L + r.hin, 'Oort cloud', 2]); bounds.push([L - r.hin, 'Oort cloud', 2]); }
+    else { bounds.push([L - r.hw, r.n, r.tier]); bounds.push([L + r.hw, null, 3]); }
+  }
+  for (const [g, L] of gals) { bounds.push([L - g.R, g.n + (g.k === 'spiral' || g.k === 'irr' ? ' edge' : ''), g.tier]); bounds.push([L + g.R, g.n + (g.k === 'spiral' || g.k === 'irr' ? ' edge' : ''), g.tier + 1]); }
+  for (const Le of [LedgeR, LedgeL]) bounds.push([Le, 'Edge of the observable universe', 0]);
+  const seenB = new Set();
+  for (const [L, name, tier] of bounds) {
+    const d = toScreen(L); if (Math.abs(d) > W) continue;
+    const x = pxOf(d); const key = Math.round(x);
+    if (seenB.has(key)) continue; seenB.add(key);
+    ctx.strokeStyle = 'rgba(200,210,255,0.22)';
+    ctx.beginPath(); ctx.moveTo(x, bandY - 4); ctx.lineTo(x, bandY + bandH + 4); ctx.stroke();
+    if (name) labels.push({ x, text: name, tier: tier + 0.5, col: 'rgba(200,210,255,0.85)' });
+  }
+  ctx.restore();
+  // markers for tiny bodies, labels
+  for (const vb of visB) {
+    const b = vb.b, x = pxOf(vb.dc);
+    if (Math.abs(vb.dc) > W) { if (b.k !== 'neb') continue; }
+    const M = vb.L >= 0 ? view.Mr : view.Ml;
+    if (vb.w < 2.5 && b.k !== 'neb' && b.k !== 'cluster') {
+      const cy = bandY + bandH / 2;
+      const rad = b.tier === 0 ? 3.5 : b.tier === 1 ? 2.8 : 2.2;
+      const col = applyM(M, b.mcol);
+      if (b.k === 'bh') {
+        ctx.fillStyle = '#000'; ctx.strokeStyle = rgbStr(col, 0.95); ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.arc(x, cy, rad + 1, 0, 7); ctx.fill(); ctx.stroke();
+      } else {
+        // a body thinner than a pixel still has its full transverse size: draw it as a thin pancake
+        const hpx = Math.min(bandH, b.r * cssW / view.W);
+        if (hpx > 2 * rad && b.k !== 'probe') {
+          ctx.fillStyle = rgbStr(col, 0.95); ctx.fillRect(x - Math.max(0.75, vb.w / 2), cy - hpx / 2, Math.max(1.5, vb.w), hpx);
+        } else { ctx.fillStyle = rgbStr(col, 1); ctx.beginPath(); ctx.arc(x, cy, rad, 0, 7); ctx.fill(); }
+        ctx.fillStyle = rgbStr(col, 0.18); ctx.beginPath(); ctx.arc(x, cy, rad * 2.6, 0, 7); ctx.fill();
+      }
+    }
+    if (Math.abs(vb.dc) <= W) labels.push({ x, text: b.n, tier: b.tier, col: 'rgba(235,240,255,0.95)', w: vb.w });
+  }
+  for (const [g, L] of gals) {
+    const d = toScreen(L); if (Math.abs(d) > W) continue;
+    labels.push({ x: pxOf(d), text: g.n + (g.bh ? '' : ' center'), tier: g.tier, col: 'rgba(255,226,170,0.95)', gal: true });
+  }
+  drawFence();
+  drawGhosts();
+  placeLabels(labels);
+  drawRocket();
+  drawScale();
+  drawOffscreen();
+}
+function placeLabels(labels) {
+  ctx.font = '500 12px "Saira Semi Condensed","Avenir Next Condensed","Roboto Condensed",system-ui,sans-serif';
+  ctx.textBaseline = 'alphabetic';
+  labels.sort((a, b) => a.tier - b.tier || (b.w || 0) - (a.w || 0));
+  const rows = [[], [], [], []];
+  const rowY = [bandY - 10, bandY - 25, bandY - 40, bandY - 55].filter(y => y > 10);
+  const used = new Set();
+  for (const L of labels) {
+    if (used.has(L.text)) continue;
+    const tw = ctx.measureText(L.text).width;
+    let x0 = Math.max(2, Math.min(cssW - tw - 2, L.x - tw / 2));
+    for (let r = 0; r < rowY.length; r++) {
+      const ok = rows[r].every(([a, b]) => x0 + tw + 6 < a || x0 > b + 6);
+      if (!ok) continue;
+      rows[r].push([x0, x0 + tw]); used.add(L.text);
+      ctx.strokeStyle = 'rgba(200,210,255,0.28)'; ctx.lineWidth = 1; ctx.setLineDash([]);
+      ctx.beginPath(); ctx.moveTo(L.x, rowY[r] + 3); ctx.lineTo(L.x, bandY - 1); ctx.stroke();
+      ctx.fillStyle = 'rgba(5,6,13,0.6)'; ctx.fillRect(x0 - 2, rowY[r] - 11, tw + 4, 14);
+      ctx.fillStyle = L.text === S.nextName ? '#f4b041' : L.col; ctx.fillText(L.text, x0, rowY[r]);
+      break;
+    }
+  }
+}
+function drawRocket() {
+  const cx = cssW / 2, cy = bandY + bandH / 2;
+  const thrusting = S.aNow > 0;
+  const ad = S.aDir;
+  const face = ad !== 0 ? ad : (S.eta !== 0 ? Math.sign(S.eta) : S.lastDir);
+  // Life size: 50 m long, 9 m across (about Starship). Drawn in meters.
+  const ppm = cssW / (2 * view.W), lenPx = 50 * ppm;
+  if (lenPx < 5) {
+    // far smaller than a pixel at most zooms: amber marks show where you are
+    ctx.save(); ctx.fillStyle = '#f4b041';
+    const tri = (y, s) => { ctx.beginPath(); ctx.moveTo(cx - 5, y); ctx.lineTo(cx + 5, y); ctx.lineTo(cx, y + 7 * s); ctx.closePath(); ctx.fill(); };
+    tri(bandY - 1, 1); tri(bandY + bandH + 1, -1);
+    ctx.beginPath(); ctx.arc(cx, cy, 1.6, 0, 7); ctx.fill();
+    ctx.restore(); return;
+  }
+  ctx.save(); ctx.translate(cx, cy); ctx.scale(face * ppm, ppm);
+  if (thrusting && ad === face) {
+    const fl = REDUCED ? 34 : 26 + 16 * Math.random();
+    const gr = ctx.createLinearGradient(-25, 0, -25 - fl, 0); gr.addColorStop(0, 'rgba(255,240,180,1)'); gr.addColorStop(1, 'rgba(255,120,40,0)');
+    ctx.fillStyle = gr; ctx.beginPath(); ctx.moveTo(-24, -4); ctx.lineTo(-25 - fl, 0); ctx.lineTo(-24, 4); ctx.fill();
+  }
+  ctx.fillStyle = '#eef1ff'; ctx.strokeStyle = '#05060d'; ctx.lineWidth = 1.2 / ppm;
+  ctx.beginPath(); ctx.moveTo(25, 0); ctx.quadraticCurveTo(22, -4.5, 13, -4.5); ctx.lineTo(-22, -4.5); ctx.lineTo(-25, -7.5); ctx.lineTo(-25, 7.5); ctx.lineTo(-22, 4.5); ctx.lineTo(13, 4.5); ctx.quadraticCurveTo(22, 4.5, 25, 0); ctx.closePath();
+  ctx.fill(); ctx.stroke();
+  ctx.fillStyle = '#f4b041'; ctx.beginPath(); ctx.arc(14, 0, 1.4, 0, 7); ctx.fill();
+  ctx.restore();
+}
+function niceLen(m) { const e = Math.floor(Math.log10(m)), b = Math.pow(10, e), r = m / b; return (r >= 5 ? 5 : r >= 2 ? 2 : 1) * b; }
+function drawScale() {
+  // full-width ruler: the exact screen width, updated every frame
+  const y = bandY + bandH + 10, x0 = 8, x1 = cssW - 8;
+  ctx.strokeStyle = 'rgba(220,226,255,0.7)'; ctx.lineWidth = 1.2; ctx.setLineDash([]);
+  ctx.beginPath(); ctx.moveTo(x0, y - 4); ctx.lineTo(x0, y + 4); ctx.moveTo(x0, y); ctx.lineTo(x1, y); ctx.moveTo(x1, y - 4); ctx.lineTo(x1, y + 4); ctx.stroke();
+  ctx.fillStyle = 'rgba(230,235,255,0.95)';
+  ctx.font = '600 12.5px "Saira Semi Condensed","Avenir Next Condensed","Roboto Condensed",system-ui,sans-serif';
+  const wYou = 2 * view.W * (cssW - 16) / cssW;
+  let t = 'Screen ' + fmtLen(wYou, 4) + ' wide' + (view.real ? ' as seen' : '');
+  if (!view.real && view.gam > 1.0005) t += `, ${fmtLen(wYou * view.gam, 4)} in Earth’s frame`;
+  let tw = ctx.measureText(t).width;
+  if (tw > cssW - 16) { const fs = Math.max(9, 12.5 * (cssW - 16) / tw); ctx.font = `600 ${fs}px "Saira Semi Condensed","Avenir Next Condensed","Roboto Condensed",system-ui,sans-serif`; tw = ctx.measureText(t).width; }
+  ctx.fillText(t, Math.max(x0, (cssW - tw) / 2), y + 20);
+}
+function nearestBeyond(sideRight) {
+  // first landmark whose screen position is outside the view on that side
+  let lo = 0, hi = MARKS.length;
+  while (lo < hi) { const m = (lo + hi) >> 1; if (MARKS[m].xmm < S.xmm) lo = m + 1; else hi = m; }
+  let i = sideRight ? lo : lo - 1;
+  for (let k = 0; k < 400 && i >= 0 && i < MARKS.length; k++, i += sideRight ? 1 : -1) {
+    const mk = MARKS[i], L = Number(mk.xmm - S.xmm) / 1000;
+    if (mk.tier > 1 && Math.abs(L) > 1e14) continue;
+    const d = toScreen(L);
+    if (Math.abs(d) > view.W) return [mk, L, d];
+  }
+  return null;
+}
+function drawOffscreen() {
+  ctx.font = '500 12px "Saira Semi Condensed","Avenir Next Condensed","Roboto Condensed",system-ui,sans-serif';
+  const y = bandY + bandH + 16;
+  for (const right of [true, false]) {
+    const r = nearestBeyond(right); if (!r) continue;
+    const [mk, L, d] = r;
+    const ps = C * Math.sinh(Math.abs(S.eta));               // Earth-frame distance per second of your clock
+    const eta_ = S.eta !== 0 && Math.sign(L) === Math.sign(S.eta) && ps > 0 ? `, ${fmtTime(Math.abs(L) / ps)}` : '';
+    const t = right ? `${mk.n} ${fmtLen(Math.abs(d), 3)}${eta_} ▶` : `◀ ${mk.n} ${fmtLen(Math.abs(d), 3)}${eta_}`;
+    const tw = ctx.measureText(t).width;
+    ctx.fillStyle = 'rgba(200,210,255,0.75)';
+    if (right) ctx.fillText(t, cssW - tw - 10, y + 47);
+    else ctx.fillText(t, 10, y + 31);
+  }
+}
+
+/* ===================== HUD ===================== */
+function containing() {
+  for (const b of BODIES) {
+    const L = Number(b.xmm - S.xmm) / 1000, a = Math.abs(L);
+    if (b.k === 'neb' || b.k === 'cluster') continue;
+    if (a <= b.r) return 'Inside ' + b.n;
+    if (b.k === 'earth' && a <= b.rh) return a - b.r < 100e3 ? 'In Earth’s atmosphere' : 'In Earth’s exosphere';
+  }
+  return null;
+}
+function locText() {
+  const inside = containing();
+  const L = n => Number(n - S.xmm) / 1000;
+  if (S.xmm >= EDGE_MM || S.xmm <= -EDGE_MM) return 'At the edge of the observable universe';
+  let neb = null;
+  for (const b of BODIES) if ((b.k === 'neb' || b.k === 'cluster') && Math.abs(L(b.xmm)) < b.r) neb = b.n;
+  let gal = null; for (const g of GALAXIES) if (Math.abs(L(g.xmm)) < g.R) gal = g;
+  const helio = Math.abs(L(REGIONS[0].xmm)) < REGIONS[0].hw;
+  let place;
+  if (helio) place = 'Interplanetary space';
+  else if (gal) place = gal.k === 'quasar' ? `Inside the host galaxy of ${gal.n.replace('Quasar ', 'quasar ')}` : gal.k === 'early' ? `Inside the early galaxy ${gal.n}` : `Interstellar space in ${/Galaxy|Milky Way|Cloud/.test(gal.n) ? 'the ' : ''}${gal.n}`;
+  else {
+    place = 'Intergalactic space';
+    for (const r of REGIONS) if ((r.k === 'cluster' || r.k === 'group' || r.k === 'void') && Math.abs(L(r.xmm)) < r.hw) place += (r.k === 'void' ? ' inside the ' : ' in the ') + r.n;
+  }
+  for (const r of REGIONS) if ((r.k === 'abelt' || r.k === 'kuiper') && Math.abs(L(r.xmm)) < r.hw) place = 'In the ' + (r.k === 'abelt' ? 'asteroid belt' : 'Kuiper belt');
+  const oort = REGIONS[3]; const so = Math.abs(L(oort.xmm)); if (so > oort.hin && so < oort.hw) place = 'Interstellar space in the Oort cloud';
+  if (neb) place = 'Inside the ' + neb;
+  return inside ? `${inside}` : place;
+}
+// speed: m/s, then km/s, then a fraction of c (truncated, never rounded up to c); past eight 9s, count the 9s
+function fmtSpeed(eta) {
+  const b = Math.abs(Math.tanh(eta)), omb = 2 / (1 + Math.exp(2 * Math.abs(eta))), v = b * C;
+  const arrow = eta > 0 ? ' ▶' : eta < 0 ? ' ◀' : '';
+  if (v < 1000) return num(v, 3) + ' m/s' + arrow;
+  if (b < 0.01) return num(v / 1000, 5) + ' km/s' + arrow;
+  if (omb > 1e-8) { const d = Math.max(3, Math.min(8, Math.ceil(-Math.log10(omb)) + 2)), k = Math.pow(10, d); return (Math.floor(b * k) / k).toFixed(d) + 'c' + arrow; }
+  return `0.999…c (${Math.floor(-Math.log10(omb))} nines)` + arrow;
+}
+function hud() {
+  const eta = S.eta, gam = Math.cosh(eta), beta = Math.tanh(eta), omb = 2 / (1 + Math.exp(2 * Math.abs(eta)));
+  $('tau').textContent = fmtClock(S.tau);
+  { const s = Math.exp(S.tsc); $('tsc').textContent = s < 0.97 ? ` (playing at ${fmtRate(s)})` : ''; }
+  $('tg').textContent = fmtTime(earthTime(), 3);
+  $('spd').textContent = fmtSpeed(eta);
+  { const a = Math.abs(eta); $('rap').textContent = eta === 0 ? '0' : (eta < 0 ? '−' : '') + (a < 1e-3 ? sci(a, 2) : num(a, a < 10 ? 4 : 5)); }
+  $('gam').textContent = gam < 1e4 ? num(gam, gam < 10 ? 6 : 5) : sci(gam, 2);
+  const xm = Number(S.xmm) / 1000;
+  $('dist').textContent = xm < -1 ? '◀ ' + fmtLen(-xm, 3) : fmtLen(xm, 3) + (xm > 1 ? ' ▶' : '');
+  $('loc').textContent = locText();
+  // next object in the direction of motion
+  const dir = eta !== 0 ? Math.sign(eta) : (held.R ? 1 : held.L ? -1 : S.lastDir);
+  let nx = ''; S.nextName = '';
+  { let lo = 0, hi = MARKS.length; while (lo < hi) { const m = (lo + hi) >> 1; if (MARKS[m].xmm < S.xmm) lo = m + 1; else hi = m; }
+    let i = dir > 0 ? lo : lo - 1;
+    for (let k = 0; k < 400 && i >= 0 && i < MARKS.length; k++, i += dir) {
+      const mk = MARKS[i]; let L = Number(mk.xmm - S.xmm) / 1000;
+      const surf = L - dir * mk.r;
+      if (Math.sign(surf) !== dir || Math.abs(surf) < 1) continue;
+      if (mk.tier > 1 && Math.abs(L) > 3e13) continue;
+      const dyou = Math.abs(surf) / gam;
+      const vv = Math.abs(beta) * C;
+      const eta_s = vv > 0 && Math.sign(eta) === dir ? dyou / vv : null;
+      S.nextName = mk.n;
+      nx = `Next ${dir > 0 ? '▶' : '◀'} ${mk.n}, ${fmtLen(dyou, 3)}` + (eta_s !== null ? `, ${fmtTime(eta_s)} away` : '');
+      break; }
+  }
+  // galaxy center + extras
+  let ex = '';
+  for (const g of GALAXIES) {
+    const L = Number(g.xmm - S.xmm) / 1000;
+    if (Math.abs(L) < g.R && g.k !== 'early') {
+      ex = `${g.n} center ${L > 0 ? '▶' : '◀'} ${fmtLen(Math.abs(L) / gam, 3)}` + (gam > 1.01 ? ` (Earth frame ${fmtLen(Math.abs(L), 3)})` : '');
+    }
+  }
+  if (S.mode === 'real' && S.fromEarth && Math.abs(eta) > 1e-6) {
+    const xmm = S.xmm < 0n ? -S.xmm : S.xmm;
+    const te = Number(S.tus - (xmm * 1000n) / 299792458n) / 1e6;
+    const r = `Earth seen at launch + ${fmtTime(Math.max(0, te))}`;
+    ex = ex ? ex + '. ' + r : r;
+  }
+  $('extra').textContent = ex;
+  { const p = jpos(Math.max(0, Math.abs(Number(S.xmm) / 1000) - RE)) * 100;
+    $('jfill').style.width = p + '%'; $('jdot').style.left = p + '%'; }
+  $('thrV').textContent = S.aNow > 0 ? (S.brake ? 'stopping, ' : '') + fmtG(S.aNow) + (S.ramp < 1 ? ', building' : '') : 'off';
+  $('tL').classList.toggle('on', held.L); $('tR').classList.toggle('on', held.R); $('brk').classList.toggle('on', S.brake);
+}
+
+/* ===================== input ===================== */
+function setMode(m) { S.mode = m; $('mInst').setAttribute('aria-pressed', m === 'inst'); $('mReal').setAttribute('aria-pressed', m === 'real'); S.logWa = Math.log10(W_MIN); }
+$('mInst').onclick = () => setMode('inst');
+$('mReal').onclick = () => setMode('real');
+$('pause').onclick = () => { S.paused = !S.paused; $('pause').textContent = S.paused ? 'Resume' : 'Pause'; };
+// layout toggle: mobile (stacked, thumb pads) or desktop (one-row HUD, compact controls). Remembered per browser.
+function setLayout(l) {
+  document.documentElement.dataset.layout = l;
+  $('lay').textContent = l === 'desktop' ? 'Mobile view' : 'Desktop view';
+  try { localStorage.setItem('rr-layout', l); } catch (e) {}
+  resize();
+}
+{ let l = null; try { l = localStorage.getItem('rr-layout'); } catch (e) {}
+  if (l !== 'desktop' && l !== 'mobile') l = window.innerWidth >= 760 ? 'desktop' : 'mobile';
+  document.documentElement.dataset.layout = l; $('lay').textContent = l === 'desktop' ? 'Mobile view' : 'Desktop view'; }
+$('lay').onclick = () => setLayout(document.documentElement.dataset.layout === 'desktop' ? 'mobile' : 'desktop');
+// Playback speed. Auto keeps the show watchable: high thrust plays back slower so every pace looks like the
+// 10-minute pace, and playback slows as you approach something so it takes ~1.6 s to cross the view.
+const SLOWS = [1];
+let slowI = 0;
+function autoScale() {
+  let s = 1;
+  const eta = S.eta, v = C * Math.abs(Math.tanh(eta));
+  if (v > 1 && view.W > 0) {
+    const gam = Math.cosh(eta), W = view.W, dir = Math.sign(eta), real = S.mode === 'real';
+    const scr = L => real ? L * Math.exp(eta * Math.sign(L)) : L / gam;
+    for (const b of BODIES) {
+      if (b.k === 'neb' || b.k === 'cluster') continue;
+      const L = Number(b.xmm - S.xmm) / 1000, d = scr(L), half = Math.abs(scr(L + b.r) - scr(L - b.r)) / 2;
+      if (half > 3 * W) continue;                       // too big to fly past within one view
+      const lead = d * dir;                              // > 0 means ahead
+      if (lead + half < -W || lead - half > 8 * W) continue;
+      if (half * cssW / W < 1 && b.r * cssW / W < 3) continue; // too small to see either way
+      s = Math.min(s, (2 * W / v) / 1.6);
+      break;
+    }
+  }
+  return Math.max(1e-15, s);
+}
+function fmtRate(s) { const k = 1 / s; return '1/' + (k < 1e6 ? num(k, 2) : sci(k, 1)); }
+$('bGo').onclick = () => { S.eta = 0; setTarget(0); S.arrived = false; S.xmm += S.xmm > 0n ? -1000n : 1000n; $('banner').hidden = true; };
+$('bReset').onclick = () => { resetAt(START_MM, 0, true); };
+$('brk').onclick = () => { S.brake = !S.brake && S.eta !== 0; };
+function holdBtn(el, side) {
+  const on = e => { e.preventDefault(); held[side] = true; el.classList.add('on'); try { el.setPointerCapture(e.pointerId); } catch (_) {} };
+  const offf = () => { held[side] = false; el.classList.remove('on'); };
+  el.addEventListener('pointerdown', on);
+  el.addEventListener('pointerup', offf); el.addEventListener('pointercancel', offf); el.addEventListener('lostpointercapture', offf);
+  el.addEventListener('contextmenu', e => e.preventDefault());
+}
+holdBtn($('tL'), 'L'); holdBtn($('tR'), 'R');
+window.addEventListener('keydown', e0 => {
+  const e = { key: e0.key.length === 1 ? e0.key.toLowerCase() : e0.key, target: e0.target, preventDefault: () => e0.preventDefault() };
+  if (e.target.tagName === 'SELECT' || e.target.tagName === 'INPUT') { if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return; if (e.target.tagName === 'SELECT') return; }
+  if (e.key === 'ArrowLeft' || e.key === 'a') { held.L = true; e.preventDefault(); }
+  else if (e.key === 'ArrowRight' || e.key === 'd') { held.R = true; e.preventDefault(); }
+  else if (e.key === ' ' || e.key === 's') { S.brake = !S.brake && S.eta !== 0; e.preventDefault(); }
+  else if (e.key === 'v') setMode(S.mode === 'inst' ? 'real' : 'inst');
+  else if (e.key === 'p') $('pause').click();
+});
+window.addEventListener('keyup', e0 => { const e = { key: e0.key.length === 1 ? e0.key.toLowerCase() : e0.key }; if (e.key === 'ArrowLeft' || e.key === 'a') held.L = false; if (e.key === 'ArrowRight' || e.key === 'd') held.R = false; });
+window.addEventListener('blur', () => { held.L = held.R = false; });
+const ptrs = new Map(); let pinch0 = null;
+cv.addEventListener('pointerdown', e => { ptrs.set(e.pointerId, e.clientX); cv.setPointerCapture(e.pointerId); if (ptrs.size === 2) { const v = [...ptrs.values()]; pinch0 = { d: Math.abs(v[0] - v[1]) || 1, z: S.zoomExp }; } });
+const endP = e => { ptrs.delete(e.pointerId); if (ptrs.size < 2) pinch0 = null; };
+cv.addEventListener('pointerup', endP); cv.addEventListener('pointercancel', endP);
+
+// jump list
+const JUMPS = [
+  ['Earth (restart)', () => [START_MM, 0, true]],
+  ...['Moon', 'Sun', 'Mars', 'Jupiter', 'Saturn', 'Neptune', 'Pluto', 'Voyager 1', 'Proxima Centauri', 'Sirius A', 'Betelgeuse',
+      'Orion Nebula', 'Crab Pulsar', 'Sagittarius A*', 'M31*', 'M87*', '3C 273*', 'TON 618*'].map(n => [n, () => {
+    const b = BODIES.find(q => q.n === n);
+    // park 60 m outside the surface (inside a nebula), so the rocket and the body share the view
+    const back = b.k === 'neb' ? b.r * 0.5 : b.r + 60;
+    return [b.xmm - toMM(back), 0, false];
+  }]),
+  ['Large Magellanic Cloud', () => galJump('Large Magellanic Cloud')],
+  ['Andromeda Galaxy', () => galJump('Andromeda Galaxy')],
+  ['GN-z11', () => galJump('GN-z11')],
+  ['Edge of the universe', () => [EDGE_MM - toMM(60), 0, false]],
+];
+function galJump(n) { const g = GALAXIES.find(q => q.n === n); return [g.xmm - toMM(g.R * 0.3), 0, false]; }
+{ const sel = $('jump'); const o0 = document.createElement('option'); o0.value = ''; o0.textContent = 'Jump to…'; sel.appendChild(o0);
+  JUMPS.forEach(([n], i) => { const o = document.createElement('option'); o.value = i; o.textContent = n; sel.appendChild(o); });
+  sel.onchange = () => { if (sel.value === '') return; const [x, z, fe] = JUMPS[+sel.value][1](); resetAt(x, z, fe); sel.value = ''; sel.blur(); }; }
+
+/* ===================== journey bar ===================== */
+function jpos(m) { return Math.min(1, Math.log10(1 + m / 1e3) / Math.log10(1 + EDGE / 1e3)); }
+{ const J = $('journey');
+  const ticks = [['Moon', 384400e3 - RE], ['Neptune', 29.07 * AU], ['Proxima', 4.2465 * LY], ['Sgr A*', 26670 * LY], ['M31', 2.537e6 * LY], ['Edge', EDGE]];
+  for (const [n, m] of ticks) {
+    const p = jpos(m) * 100;
+    const t = document.createElement('div'); t.className = 'jtick'; t.style.left = p + '%'; J.appendChild(t);
+    const l = document.createElement('div'); l.className = 'jlab' + (n === 'Edge' ? ' end' : ''); l.style.left = p + '%'; l.textContent = n; J.appendChild(l);
+  }
+
+}
+
+/* ===================== loop ===================== */
+let last = performance.now(), hudT = 0;
+function frame(ts) {
+  const dt = Math.min(0.05, Math.max(0, (ts - last) / 1000)); last = ts;
+  if (!S.paused && !S.arrived) physics(dt, dt);
+  render();
+  if (ts - hudT > 90) { hud(); hudT = ts; }
+  requestAnimationFrame(frame);
+}
+resize(); hud();
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Reaction wheel on a free body</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #E9EEF2; --surface: #F7F9FB; --ink: #17222D; --muted: #566676; --rule: #C5D0DA;
+  --ax-x: #C53030; --ax-y: #2F855A; --ax-z: #2B6CB0; --j: #6B46C1; --wheel: #B7791F;
+  --bus: #A9B6C2; --omega: #566676;
+  color-scheme: light;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #10161C; --surface: #171F27; --ink: #E4EAF0; --muted: #93A3B3; --rule: #2A3642;
+    --ax-x: #F07167; --ax-y: #5CC08A; --ax-z: #6AA6E8; --j: #A78BFA; --wheel: #E0B04A;
+    --bus: #5E6C7A; --omega: #93A3B3;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #10161C; --surface: #171F27; --ink: #E4EAF0; --muted: #93A3B3; --rule: #2A3642;
+  --ax-x: #F07167; --ax-y: #5CC08A; --ax-z: #6AA6E8; --j: #A78BFA; --wheel: #E0B04A;
+  --bus: #5E6C7A; --omega: #93A3B3;
+  color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: inherit; }
+html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: "Atkinson Hyperlegible", "Segoe UI", system-ui, -apple-system, sans-serif;
+  font-size: 1rem; line-height: 1.5;
+}
+.page { max-width: 1180px; margin: 0 auto; padding: 1.25rem 1rem 2.5rem; }
+header { max-width: 62ch; margin-bottom: 1.25rem; }
+h1 {
+  font-family: "Newsreader", Georgia, "Times New Roman", serif; font-weight: 600;
+  font-size: clamp(1.7rem, 4.5vw, 2.5rem); line-height: 1.1; letter-spacing: -0.01em; margin: 0 0 0.5rem;
+}
+h2 {
+  font-family: "Newsreader", Georgia, serif; font-weight: 500;
+  font-size: 1.25rem; margin: 0 0 0.5rem;
+}
+p { margin: 0 0 0.6rem; }
+.lede { color: var(--muted); }
+.layout { display: grid; gap: 1.25rem; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 920px) { .layout { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); align-items: start; } }
+
+.view {
+  position: relative; aspect-ratio: 1 / 1; max-height: 72vh; width: 100%;
+  background: var(--surface); border: 1px solid var(--rule); border-radius: 14px; overflow: hidden;
+  touch-action: none;
+}
+.view canvas { display: block; width: 100%; height: 100%; cursor: grab; }
+.view canvas:active { cursor: grabbing; }
+.key {
+  position: absolute; left: 0.75rem; bottom: 0.6rem; font-size: 0.82rem; color: var(--muted);
+  display: flex; gap: 0.9rem; flex-wrap: wrap; pointer-events: none;
+}
+.key span { display: inline-flex; align-items: center; gap: 0.35rem; }
+.sw { width: 0.9rem; height: 0.22rem; border-radius: 2px; display: inline-block; }
+.hint { position: absolute; right: 0.75rem; top: 0.55rem; font-size: 0.8rem; color: var(--muted); pointer-events: none; }
+
+.controls { margin-top: 0.9rem; display: grid; gap: 0.85rem; }
+.row { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+.seg { display: inline-flex; border: 1px solid var(--rule); border-radius: 999px; overflow: hidden; background: var(--surface); }
+.seg button { border: 0; border-right: 1px solid var(--rule); border-radius: 0; }
+.seg button:last-child { border-right: 0; }
+button {
+  font: inherit; font-size: 0.92rem; color: var(--ink); background: var(--surface);
+  border: 1px solid var(--rule); border-radius: 999px; padding: 0.42rem 0.9rem; cursor: pointer;
+  min-height: 2.4rem;
+}
+button[aria-pressed="true"] { background: var(--ink); color: var(--surface); }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--ax-z); outline-offset: 2px; }
+.torque { display: grid; gap: 0.25rem; }
+.torque label { display: flex; justify-content: space-between; font-size: 0.92rem; }
+.torque output { font-variant-numeric: tabular-nums; color: var(--muted); }
+input[type="range"] { width: 100%; accent-color: var(--wheel); }
+.check { display: inline-flex; align-items: center; gap: 0.45rem; font-size: 0.92rem; cursor: pointer; }
+.check input { width: 1.1rem; height: 1.1rem; accent-color: var(--j); }
+
+.readouts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.5rem; margin: 0.4rem 0 0; }
+.readouts div { background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 0.5rem 0.65rem; }
+.readouts dt { font-size: 0.8rem; color: var(--muted); }
+.readouts dd { margin: 0; font-size: 1.05rem; font-variant-numeric: tabular-nums; }
+
+.plots { display: grid; gap: 1rem; }
+figure { margin: 0; background: var(--surface); border: 1px solid var(--rule); border-radius: 14px; padding: 0.75rem 0.85rem 0.6rem; }
+figcaption { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.25rem 1rem; align-items: baseline; margin-bottom: 0.35rem; }
+figcaption strong { font-weight: 700; }
+.legend { display: flex; gap: 0.75rem; font-size: 0.8rem; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 0.3rem; }
+.plot { display: block; width: 100%; height: 150px; }
+.plot.short { height: 110px; }
+.note { font-size: 0.85rem; color: var(--muted); margin: 0.35rem 0 0; }
+
+.eqs { margin-top: 1.75rem; max-width: 70ch; }
+.eqs dl { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 0.45rem 1rem; margin: 0.6rem 0 0; }
+.eqs dt { color: var(--muted); font-size: 0.92rem; }
+.eqs dd { margin: 0; font-family: "Newsreader", Georgia, serif; font-size: 1.08rem; overflow-x: auto; }
+@media (max-width: 520px) { .eqs dl { grid-template-columns: minmax(0, 1fr); gap: 0.1rem; } .eqs dd { margin-bottom: 0.5rem; } }
+.eqs .params { margin-top: 0.9rem; font-size: 0.92rem; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <h1>Reaction wheel on a free body</h1>
+    <p class="lede">The motor torque acts only in the wheel’s shape equation. It pushes <b>μ</b> around in the body frame, but the momentum map <b>J</b> = g<b>μ</b> stays fixed unless an external torque acts.</p>
+  </header>
+
+  <div class="layout">
+    <section aria-label="Simulation">
+      <div class="view" id="view">
+        <canvas id="scene" aria-label="3D view of the body and wheel. Drag to orbit, scroll to zoom."></canvas>
+        <div class="hint">Drag to orbit</div>
+        <div class="key">
+          <span><i class="sw" style="background:var(--j)"></i><b>J</b> (spatial)</span>
+          <span><i class="sw" style="background:var(--omega)"></i><b>ω</b></span>
+          <span><i class="sw" style="background:var(--wheel)"></i>wheel</span>
+        </div>
+      </div>
+
+      <div class="controls">
+        <div class="row">
+          <div class="seg" role="group" aria-label="Initial condition">
+            <button data-preset="rest" aria-pressed="false">At rest</button>
+            <button data-preset="tumble" aria-pressed="true">Tumbling</button>
+            <button data-preset="middle">Middle-axis spin</button>
+          </div>
+        </div>
+        <div class="row">
+          <button id="play" aria-pressed="false">Pause</button>
+          <button id="reset">Reset</button>
+          <label class="check"><input type="checkbox" id="ext"> External torque</label>
+        </div>
+        <div class="torque">
+          <label for="u"><span>Motor torque u</span><output id="uOut">0.00</output></label>
+          <input type="range" id="u" min="-0.3" max="0.3" step="0.01" value="0">
+          <div class="row"><button id="zero">Release motor</button></div>
+        </div>
+        <dl class="readouts">
+          <div><dt>‖<b>J</b>‖</dt><dd id="rJ">–</dd></div>
+          <div><dt>Energy</dt><dd id="rE">–</dd></div>
+          <div><dt>Wheel rate φ̇</dt><dd id="rW">–</dd></div>
+        </dl>
+        <p class="note" id="tip"></p>
+      </div>
+    </section>
+
+    <section class="plots" aria-label="Plots">
+      <figure>
+        <figcaption><span><strong>Body momentum μ</strong>, body axes</span>
+          <span class="legend"><span><i class="sw" style="background:var(--ax-x)"></i>1</span><span><i class="sw" style="background:var(--ax-y)"></i>2</span><span><i class="sw" style="background:var(--ax-z)"></i>3</span></span>
+        </figcaption>
+        <canvas class="plot" id="pMu"></canvas>
+      </figure>
+      <figure>
+        <figcaption><span><strong>Momentum map J = gμ</strong>, spatial axes</span>
+          <span class="legend"><span><i class="sw" style="background:var(--ax-x)"></i>1</span><span><i class="sw" style="background:var(--ax-y)"></i>2</span><span><i class="sw" style="background:var(--ax-z)"></i>3</span></span>
+        </figcaption>
+        <canvas class="plot" id="pJ"></canvas>
+        <p class="note">Same vertical scale as μ. With no external torque, these lines stay flat whatever the motor does.</p>
+      </figure>
+      <figure>
+        <figcaption><span><strong>Wheel momentum p</strong></span>
+          <span class="legend"><span><i class="sw" style="background:var(--wheel)"></i>p</span></span>
+        </figcaption>
+        <canvas class="plot short" id="pP"></canvas>
+      </figure>
+    </section>
+  </div>
+
+  <section class="eqs" aria-label="Equations">
+    <h2>What is being integrated</h2>
+    <p>The configuration is g ∈ SO(3) for the body and the wheel angle φ relative to the body. The group is SO(3) and the shape space is the circle. Here I is the locked inertia (body plus wheel, wheel not spinning), I<sub>w</sub> is the wheel’s axial inertia, and <b>â</b> is the wheel axis in the body frame.</p>
+    <dl>
+      <dt>Reduced Lagrangian</dt><dd>l(<b>ω</b>, φ̇) = ½ <b>ω</b>·I<b>ω</b> + I<sub>w</sub> φ̇ (<b>â</b>·<b>ω</b>) + ½ I<sub>w</sub> φ̇²</dd>
+      <dt>Body momentum</dt><dd><b>μ</b> = ∂l/∂<b>ω</b> = I<b>ω</b> + I<sub>w</sub> φ̇ <b>â</b></dd>
+      <dt>Wheel momentum</dt><dd>p = ∂l/∂φ̇ = I<sub>w</sub> (<b>â</b>·<b>ω</b> + φ̇)</dd>
+      <dt>Euler–Poincaré</dt><dd><b>μ̇</b> = <b>μ</b> × <b>ω</b> + <b>τ</b></dd>
+      <dt>Shape equation</dt><dd>ṗ = u</dd>
+      <dt>Recover <b>ω</b></dt><dd><b>ω</b> = (I − I<sub>w</sub> <b>â</b><b>â</b><sup>T</sup>)<sup>−1</sup> (<b>μ</b> − p <b>â</b>)</dd>
+      <dt>Reconstruction</dt><dd>ġ = g <b>ω̂</b></dd>
+      <dt>Momentum map</dt><dd><b>J</b> = g<b>μ</b>, with <b>J̇</b> = g<b>τ</b></dd>
+    </dl>
+    <p class="params">Parameters: I = diag(3, 2, 1.2), I<sub>w</sub> = 0.08, <b>â</b> along body axis 3. The external torque is <b>τ</b> = (0.06, 0, 0) in the body frame. Integrated with RK4 at a fixed step of 0.004.</p>
+  </section>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function () {
+  // ---------- Model ----------
+  const I = [3.0, 2.0, 1.2];
+  const Iw = 0.08;
+  const a = [0, 0, 1];
+  const TAU_EXT = [0.06, 0, 0];
+  const DT = 0.004;
+
+  const A = [
+    [I[0] - Iw * a[0] * a[0], -Iw * a[0] * a[1], -Iw * a[0] * a[2]],
+    [-Iw * a[1] * a[0], I[1] - Iw * a[1] * a[1], -Iw * a[1] * a[2]],
+    [-Iw * a[2] * a[0], -Iw * a[2] * a[1], I[2] - Iw * a[2] * a[2]]
+  ];
+  function inv3(m) {
+    const [a1, b1, c1] = m[0], [a2, b2, c2] = m[1], [a3, b3, c3] = m[2];
+    const det = a1 * (b2 * c3 - b3 * c2) - b1 * (a2 * c3 - a3 * c2) + c1 * (a2 * b3 - a3 * b2);
+    return [
+      [(b2 * c3 - b3 * c2) / det, (c1 * b3 - b1 * c3) / det, (b1 * c2 - c1 * b2) / det],
+      [(c2 * a3 - a2 * c3) / det, (a1 * c3 - c1 * a3) / det, (c1 * a2 - a1 * c2) / det],
+      [(a2 * b3 - b2 * a3) / det, (b1 * a3 - a1 * b3) / det, (a1 * b2 - b1 * a2) / det]
+    ];
+  }
+  const Ainv = inv3(A);
+  const mv = (m, v) => [m[0][0] * v[0] + m[0][1] * v[1] + m[0][2] * v[2], m[1][0] * v[0] + m[1][1] * v[1] + m[1][2] * v[2], m[2][0] * v[0] + m[2][1] * v[1] + m[2][2] * v[2]];
+  const cross = (x, y) => [x[1] * y[2] - x[2] * y[1], x[2] * y[0] - x[0] * y[2], x[0] * y[1] - x[1] * y[0]];
+  const dot = (x, y) => x[0] * y[0] + x[1] * y[1] + x[2] * y[2];
+  const norm = (x) => Math.sqrt(dot(x, x));
+
+  function rotMat(q) {
+    const [w, x, y, z] = q;
+    return [
+      [1 - 2 * (y * y + z * z), 2 * (x * y - w * z), 2 * (x * z + w * y)],
+      [2 * (x * y + w * z), 1 - 2 * (x * x + z * z), 2 * (y * z - w * x)],
+      [2 * (x * z - w * y), 2 * (y * z + w * x), 1 - 2 * (x * x + y * y)]
+    ];
+  }
+  function omegaOf(mu, p) { return mv(Ainv, [mu[0] - p * a[0], mu[1] - p * a[1], mu[2] - p * a[2]]); }
+
+  // state: [qw,qx,qy,qz, mu1,mu2,mu3, p, phi]
+  function deriv(s, u, tau) {
+    const q = [s[0], s[1], s[2], s[3]], mu = [s[4], s[5], s[6]], p = s[7];
+    const w = omegaOf(mu, p);
+    const c = cross(mu, w);
+    const qd = [
+      0.5 * (-q[1] * w[0] - q[2] * w[1] - q[3] * w[2]),
+      0.5 * (q[0] * w[0] + q[2] * w[2] - q[3] * w[1]),
+      0.5 * (q[0] * w[1] + q[3] * w[0] - q[1] * w[2]),
+      0.5 * (q[0] * w[2] + q[1] * w[1] - q[2] * w[0])
+    ];
+    return [qd[0], qd[1], qd[2], qd[3], c[0] + tau[0], c[1] + tau[1], c[2] + tau[2], u, p / Iw - dot(a, w)];
+  }
+  function rk4(s, h, u, tau) {
+    const add = (x, k, f) => x.map((v, i) => v + f * k[i]);
+    const k1 = deriv(s, u, tau);
+    const k2 = deriv(add(s, k1, h / 2), u, tau);
+    const k3 = deriv(add(s, k2, h / 2), u, tau);
+    const k4 = deriv(add(s, k3, h), u, tau);
+    const n = s.map((v, i) => v + (h / 6) * (k1[i] + 2 * k2[i] + 2 * k3[i] + k4[i]));
+    const qn = Math.hypot(n[0], n[1], n[2], n[3]);
+    for (let i = 0; i < 4; i++) n[i] /= qn;
+    return n;
+  }
+
+  const presets = {
+    rest: [0, 0, 0],
+    tumble: [1.0, 0.6, 0.8],
+    middle: [0.02, 2.0, 0.02]
+  };
+  const tips = {
+    rest: "Start here and push the motor torque. The body turns the other way, and J stays at zero. Release the motor and the body stops, but in a new attitude.",
+    tumble: "The body components of μ wander while J holds still. Run the motor and μ shifts, yet J does not move.",
+    middle: "Spin about the middle principal axis is unstable, so the body flips over and over. J stays fixed through every flip."
+  };
+  let preset = "tumble";
+  let state, t, hist, running = true, acc = 0, lastRec = -1;
+
+  function initState(name) {
+    const w0 = presets[name];
+    const mu = [I[0] * w0[0], I[1] * w0[1], I[2] * w0[2]];
+    const p = Iw * dot(a, w0);
+    state = [1, 0, 0, 0, mu[0], mu[1], mu[2], p, 0];
+    t = 0; acc = 0; lastRec = -1;
+    hist = { t: [], mu: [[], [], []], J: [[], [], []], p: [] };
+    record();
+    document.getElementById("tip").textContent = tips[name];
+  }
+  function Jof(s) { return mv(rotMat([s[0], s[1], s[2], s[3]]), [s[4], s[5], s[6]]); }
+  function energyOf(s) {
+    const mu = [s[4], s[5], s[6]], p = s[7];
+    const w = omegaOf(mu, p);
+    return 0.5 * dot(w, mv(A, w)) + p * p / (2 * Iw);
+  }
+  const WINDOW = 30;
+  function record() {
+    const J = Jof(state);
+    hist.t.push(t);
+    for (let i = 0; i < 3; i++) { hist.mu[i].push(state[4 + i]); hist.J[i].push(J[i]); }
+    hist.p.push(state[7]);
+    while (hist.t.length && hist.t[0] < t - WINDOW) {
+      hist.t.shift(); hist.p.shift();
+      for (let i = 0; i < 3; i++) { hist.mu[i].shift(); hist.J[i].shift(); }
+    }
+  }
+
+  // ---------- Controls ----------
+  const uIn = document.getElementById("u"), uOut = document.getElementById("uOut");
+  const extIn = document.getElementById("ext");
+  const playBtn = document.getElementById("play");
+  let u = 0;
+  function setU(v) {
+    u = Math.abs(v) < 0.015 ? 0 : v;
+    uIn.value = u; uOut.textContent = (u >= 0 ? " " : "") + u.toFixed(2);
+  }
+  uIn.addEventListener("input", () => setU(parseFloat(uIn.value)));
+  document.getElementById("zero").addEventListener("click", () => setU(0));
+  document.getElementById("reset").addEventListener("click", () => initState(preset));
+  playBtn.addEventListener("click", () => {
+    running = !running;
+    playBtn.textContent = running ? "Pause" : "Play";
+    playBtn.setAttribute("aria-pressed", running ? "false" : "true");
+  });
+  document.querySelectorAll("[data-preset]").forEach((b) => {
+    b.addEventListener("click", () => {
+      preset = b.dataset.preset;
+      document.querySelectorAll("[data-preset]").forEach((x) => x.setAttribute("aria-pressed", x === b ? "true" : "false"));
+      setU(0);
+      initState(preset);
+    });
+  });
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    running = false; playBtn.textContent = "Play"; playBtn.setAttribute("aria-pressed", "true");
+  }
+
+  // ---------- Colors ----------
+  let col = {};
+  function readColors() {
+    const cs = getComputedStyle(document.documentElement);
+    ["--ink", "--muted", "--rule", "--surface", "--ax-x", "--ax-y", "--ax-z", "--j", "--wheel", "--bus", "--omega"].forEach((k) => {
+      col[k] = cs.getPropertyValue(k).trim();
+    });
+  }
+  readColors();
+
+  // ---------- 3D scene ----------
+  const view = document.getElementById("view");
+  const canvas = document.getElementById("scene");
+  let renderer = null, scene, camera, bus, spinner, jArrow, wArrow, grid, busMat, wheelMat, stripeMat, axisLines = [];
+  const camS = { r: 8.0, th: 0.85, ph: 1.15 };
+
+  function buildScene() {
+    if (typeof THREE === "undefined") return;
+    renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    scene = new THREE.Scene();
+    camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
+    camera.up.set(0, 0, 1);
+
+    scene.add(new THREE.HemisphereLight(0xffffff, 0x445566, 0.85));
+    const dl = new THREE.DirectionalLight(0xffffff, 0.7);
+    dl.position.set(4, -3, 6); scene.add(dl);
+
+    // box sized from the principal inertias
+    const raw = [I[1] + I[2] - I[0], I[0] + I[2] - I[1], I[0] + I[1] - I[2]].map((v) => Math.sqrt(Math.max(v, 0.02)));
+    const sc = 2.2 / Math.max(...raw);
+    const dims = raw.map((v) => v * sc);
+
+    bus = new THREE.Group();
+    busMat = new THREE.MeshStandardMaterial({ color: col["--bus"], roughness: 0.65, metalness: 0.15 });
+    const box = new THREE.Mesh(new THREE.BoxGeometry(dims[0], dims[1], dims[2]), busMat);
+    bus.add(box);
+    const edges = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(dims[0], dims[1], dims[2])), new THREE.LineBasicMaterial({ color: col["--ink"], transparent: true, opacity: 0.35 }));
+    bus.add(edges);
+
+    // body axes
+    const axCols = ["--ax-x", "--ax-y", "--ax-z"];
+    for (let i = 0; i < 3; i++) {
+      const dir = [0, 0, 0]; dir[i] = 1;
+      const len = dims[i] / 2 + 0.55;
+      const g = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0, 0), new THREE.Vector3(dir[0] * len, dir[1] * len, dir[2] * len)]);
+      const m = new THREE.LineBasicMaterial({ color: col[axCols[i]] });
+      const line = new THREE.Line(g, m);
+      line.userData.key = axCols[i];
+      axisLines.push(line); bus.add(line);
+    }
+
+    // wheel on the +z face, axis along body z
+    const mount = new THREE.Group();
+    mount.position.set(0, 0, dims[2] / 2 + 0.09);
+    spinner = new THREE.Group();
+    wheelMat = new THREE.MeshStandardMaterial({ color: col["--wheel"], roughness: 0.4, metalness: 0.3 });
+    const disk = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 0.12, 40), wheelMat);
+    disk.rotation.x = Math.PI / 2;
+    spinner.add(disk);
+    stripeMat = new THREE.MeshStandardMaterial({ color: col["--ink"] });
+    const stripe = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.09, 0.135), stripeMat);
+    spinner.add(stripe);
+    mount.add(spinner);
+    bus.add(mount);
+    scene.add(bus);
+
+    jArrow = new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), new THREE.Vector3(0, 0, 0), 2.6, col["--j"], 0.32, 0.18);
+    wArrow = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), 1.5, col["--omega"], 0.24, 0.13);
+    scene.add(jArrow); scene.add(wArrow);
+
+    grid = new THREE.GridHelper(8, 16, col["--rule"], col["--rule"]);
+    grid.rotation.x = Math.PI / 2;
+    grid.position.z = -2.1;
+    scene.add(grid);
+
+    resize();
+  }
+  function applySceneColors() {
+    if (!renderer) return;
+    busMat.color.set(col["--bus"]);
+    wheelMat.color.set(col["--wheel"]);
+    stripeMat.color.set(col["--ink"]);
+    axisLines.forEach((l) => l.material.color.set(col[l.userData.key]));
+    jArrow.setColor(new THREE.Color(col["--j"]));
+    wArrow.setColor(new THREE.Color(col["--omega"]));
+    grid.material.color = new THREE.Color(col["--rule"]);
+  }
+  function placeCamera() {
+    if (!camera) return;
+    const { r, th, ph } = camS;
+    camera.position.set(r * Math.sin(ph) * Math.cos(th), r * Math.sin(ph) * Math.sin(th), r * Math.cos(ph));
+    camera.lookAt(0, 0, 0);
+  }
+  function resize() {
+    if (renderer) {
+      const w = view.clientWidth, h = view.clientHeight;
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h; camera.updateProjectionMatrix();
+    }
+    sizePlots();
+  }
+
+  // orbit by drag
+  let drag = null;
+  canvas.addEventListener("pointerdown", (e) => { drag = { x: e.clientX, y: e.clientY }; canvas.setPointerCapture(e.pointerId); });
+  canvas.addEventListener("pointermove", (e) => {
+    if (!drag) return;
+    camS.th -= (e.clientX - drag.x) * 0.008;
+    camS.ph = Math.min(Math.PI - 0.05, Math.max(0.05, camS.ph - (e.clientY - drag.y) * 0.008));
+    drag = { x: e.clientX, y: e.clientY };
+  });
+  const endDrag = () => { drag = null; };
+  canvas.addEventListener("pointerup", endDrag);
+  canvas.addEventListener("pointercancel", endDrag);
+  canvas.addEventListener("wheel", (e) => { e.preventDefault(); camS.r = Math.min(16, Math.max(4.5, camS.r * (1 + e.deltaY * 0.001))); }, { passive: false });
+
+  // ---------- Plots ----------
+  const plots = [document.getElementById("pMu"), document.getElementById("pJ"), document.getElementById("pP")];
+  function sizePlots() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    plots.forEach((c) => { c.width = Math.round(c.clientWidth * dpr); c.height = Math.round(c.clientHeight * dpr); c._dpr = dpr; });
+  }
+  function niceStep(range) {
+    const raw = range / 2.5, p = Math.pow(10, Math.floor(Math.log10(raw))), m = raw / p;
+    return (m < 1.5 ? 1 : m < 3.5 ? 2 : m < 7.5 ? 5 : 10) * p;
+  }
+  function drawPlot(c, series, ymax) {
+    const ctx = c.getContext("2d"), dpr = c._dpr || 1;
+    const W = c.width / dpr, H = c.height / dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, W, H);
+    const L = 40, R = 6, T = 6, B = 20;
+    const pw = W - L - R, ph = H - T - B;
+    const t1 = Math.max(t, WINDOW), t0 = t1 - WINDOW;
+    const X = (tt) => L + ((tt - t0) / WINDOW) * pw;
+    const Y = (v) => T + ph / 2 - (v / ymax) * (ph / 2);
+    ctx.font = "11px 'Atkinson Hyperlegible', system-ui, sans-serif";
+    ctx.lineWidth = 1;
+    // grid
+    ctx.strokeStyle = col["--rule"]; ctx.fillStyle = col["--muted"];
+    ctx.textAlign = "center"; ctx.textBaseline = "top";
+    for (let s = Math.ceil(t0 / 5) * 5; s <= t1 + 1e-9; s += 5) {
+      const x = X(s);
+      ctx.beginPath(); ctx.moveTo(x, T); ctx.lineTo(x, T + ph); ctx.stroke();
+      ctx.fillText(String(Math.round(s)), x, T + ph + 4);
+    }
+    const st = niceStep(ymax * 2);
+    ctx.textAlign = "right"; ctx.textBaseline = "middle";
+    for (let v = -Math.floor(ymax / st) * st; v <= ymax + 1e-9; v += st) {
+      const y = Y(v);
+      ctx.beginPath(); ctx.moveTo(L, y); ctx.lineTo(L + pw, y); ctx.stroke();
+      ctx.fillText((Math.abs(v) < 1e-9 ? 0 : v).toFixed(st < 1 ? 1 : 0), L - 6, y);
+    }
+    ctx.strokeStyle = col["--muted"];
+    ctx.beginPath(); ctx.moveTo(L, Y(0)); ctx.lineTo(L + pw, Y(0)); ctx.stroke();
+    // lines
+    ctx.lineWidth = 2; ctx.lineJoin = "round";
+    series.forEach(({ data, color }) => {
+      ctx.strokeStyle = color; ctx.beginPath();
+      for (let i = 0; i < data.length; i++) {
+        const x = X(hist.t[i]), y = Y(Math.max(-ymax, Math.min(ymax, data[i])));
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    });
+  }
+  function maxAbs(arrs) { let m = 0; arrs.forEach((a) => a.forEach((v) => { const x = Math.abs(v); if (x > m) m = x; })); return m; }
+
+  // ---------- Readouts ----------
+  const rJ = document.getElementById("rJ"), rE = document.getElementById("rE"), rW = document.getElementById("rW");
+  let lastReadout = 0;
+  function updateReadouts(now) {
+    if (now - lastReadout < 100) return;
+    lastReadout = now;
+    const J = Jof(state), mu = [state[4], state[5], state[6]], p = state[7];
+    const w = omegaOf(mu, p);
+    rJ.textContent = norm(J).toFixed(4);
+    rE.textContent = energyOf(state).toFixed(3);
+    rW.textContent = (p / Iw - dot(a, w)).toFixed(2);
+  }
+
+  // ---------- Loop ----------
+  let last = performance.now();
+  function frame(now) {
+    const dtReal = Math.min((now - last) / 1000, 0.05);
+    last = now;
+    if (running) {
+      acc += dtReal;
+      const tau = extIn.checked ? TAU_EXT : [0, 0, 0];
+      let n = 0;
+      while (acc >= DT && n < 40) {
+        state = rk4(state, DT, u, tau);
+        t += DT; acc -= DT; n++;
+        if (t - lastRec >= 0.05) { record(); lastRec = t; }
+      }
+      if (n >= 40) acc = 0;
+    }
+    if (renderer) {
+      bus.quaternion.set(state[1], state[2], state[3], state[0]);
+      spinner.rotation.z = state[8] % (2 * Math.PI);
+      const J = Jof(state), nJ = norm(J);
+      jArrow.visible = nJ > 1e-3;
+      if (jArrow.visible) jArrow.setDirection(new THREE.Vector3(J[0] / nJ, J[1] / nJ, J[2] / nJ));
+      const mu = [state[4], state[5], state[6]];
+      const wb = omegaOf(mu, state[7]);
+      const ws = mv(rotMat([state[0], state[1], state[2], state[3]]), wb), nw = norm(ws);
+      wArrow.visible = nw > 1e-3;
+      if (wArrow.visible) {
+        wArrow.setDirection(new THREE.Vector3(ws[0] / nw, ws[1] / nw, ws[2] / nw));
+        wArrow.setLength(Math.min(2.8, Math.max(0.6, 0.9 * nw)), 0.24, 0.13);
+      }
+      placeCamera();
+      renderer.render(scene, camera);
+    }
+    const ym = Math.max(0.5, 1.15 * maxAbs([...hist.mu, ...hist.J]));
+    drawPlot(plots[0], [0, 1, 2].map((i) => ({ data: hist.mu[i], color: col[["--ax-x", "--ax-y", "--ax-z"][i]] })), ym);
+    drawPlot(plots[1], [0, 1, 2].map((i) => ({ data: hist.J[i], color: col[["--ax-x", "--ax-y", "--ax-z"][i]] })), ym);
+    drawPlot(plots[2], [{ data: hist.p, color: col["--wheel"] }], Math.max(0.2, 1.15 * maxAbs([hist.p])));
+    updateReadouts(now);
+    requestAnimationFrame(frame);
+  }
+
+  // ---------- Theme changes ----------
+  const onTheme = () => { readColors(); applySceneColors(); };
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", onTheme);
+  new MutationObserver(onTheme).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+  // ---------- Start ----------
+  setU(0);
+  initState(preset);
+  buildScene();
+  if (!renderer) {
+    view.querySelector(".hint").textContent = "3D view unavailable";
+  }
+  sizePlots();
+  new ResizeObserver(resize).observe(view);
+  new ResizeObserver(sizePlots).observe(plots[0]);
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
