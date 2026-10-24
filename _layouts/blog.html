@@ -1,0 +1,104 @@
+---
+layout: default
+---
+
+{% include base_path %}
+
+{% assign entries = site.entries | sort: "date" | reverse %}
+{% assign months = entries | group_by_exp: "e", "e.date | date: '%Y-%m'" %}
+
+{% assign all_tags = "" | split: "" %}
+{% for entry in entries %}
+  {% for tag in entry.tags %}
+    {% assign all_tags = all_tags | push: tag %}
+  {% endfor %}
+{% endfor %}
+{% assign all_tags = all_tags | uniq | sort %}
+
+<div id="main" role="main">
+
+  <div class="sidebar sticky blog-sidebar">
+    <h3 class="author__name">Archives</h3>
+    <ul class="blog-sidebar__months">
+      {% for m in months %}
+        {% assign first = m.items | first %}
+        <li><a class="blog-sidebar__link" href="{{ base_path }}/blog/#{{ m.name }}" data-key="{{ m.name }}" data-label="{% include short-date.html date=first.date %}">{% include short-date.html date=first.date %} ({{ m.size }})</a></li>
+      {% endfor %}
+    </ul>
+
+    {% if all_tags.size > 0 %}
+      <div class="blog-sidebar__tags">
+        {% for tag in all_tags %}<a class="blog-sidebar__tag" href="{{ base_path }}/blog/#tag:{{ tag }}" data-key="tag:{{ tag }}" data-label="{{ tag }}">{{ tag }}</a>{% endfor %}
+      </div>
+    {% endif %}
+  </div>
+
+  <article class="page post" itemscope itemtype="http://schema.org/CreativeWork">
+    <div class="page__inner-wrap">
+    {% if page.url == "/blog/" %}
+
+      <h1 class="page__title" id="blog-heading">Blog</h1>
+
+      <section class="page__content">
+        {% for entry in entries %}
+          <a class="post-row" href="{{ base_path }}{{ entry.url }}" data-month="{{ entry.date | date: '%Y-%m' }}" data-tags="{{ entry.tags | join: ',' }}">
+            <time datetime="{{ entry.date | date_to_xmlschema }}">{% include short-date.html date=entry.date day=true %}</time>
+            <div class="post-row__body">
+              <span class="post-row__title">{{ entry.title | markdownify | remove: "<p>" | remove: "</p>" }}</span>
+              <p class="post-row__excerpt">{{ entry.excerpt | strip_html | strip | truncate: 220 }}</p>
+            </div>
+          </a>
+        {% endfor %}
+      </section>
+
+      <script>
+        (function () {
+          var items = document.querySelectorAll('.post-row');
+          var links = document.querySelectorAll('.blog-sidebar__link, .blog-sidebar__tag');
+          var heading = document.getElementById('blog-heading');
+          var newest = document.querySelector('.blog-sidebar__link').getAttribute('data-key');
+
+          function apply() {
+            var key = decodeURIComponent(location.hash.replace('#', '')) || newest;
+            var isTag = key.indexOf('tag:') === 0;
+            var label = 'Blog';
+            items.forEach(function (li) {
+              var ok = !key ||
+                (isTag ? li.getAttribute('data-tags').split(',').indexOf(key.slice(4)) !== -1
+                       : li.getAttribute('data-month') === key);
+              li.style.display = ok ? '' : 'none';
+            });
+            links.forEach(function (a) {
+              var on = a.getAttribute('data-key') === key;
+              a.classList.toggle('is-active', on);
+              if (on && key) label = isTag ? 'Tag: ' + a.getAttribute('data-label') : a.getAttribute('data-label');
+            });
+            heading.textContent = label;
+          }
+
+          window.addEventListener('hashchange', apply);
+          apply();
+        })();
+      </script>
+
+    {% else %}
+
+      {% assign words = page.content | strip_html | number_of_words %}
+      {% assign minutes = words | divided_by: site.words_per_minute | plus: 1 %}
+      <header>
+        <h1 class="page__title" itemprop="headline">{{ page.title | markdownify | remove: "<p>" | remove: "</p>" }}</h1>
+        <p class="page__byline">
+          <time datetime="{{ page.date | date_to_xmlschema }}">{% include short-date.html date=page.date day=true %}</time>
+          <span class="page__byline-sep">&middot;</span> {{ minutes }} min read
+          {% if page.tags.size > 0 %}<span class="page__byline-sep">&middot;</span> {{ page.tags | join: ", " }}{% endif %}
+        </p>
+      </header>
+
+      <section class="page__content" itemprop="text">
+        {{ content }}
+      </section>
+
+    {% endif %}
+    </div>
+  </article>
+</div>

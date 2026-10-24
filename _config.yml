@@ -177,19 +177,25 @@ kramdown:
   enable_coderay: false
 
 
+# Blog entries live in _entries/ (any filename; date and title come from front matter)
+collections:
+  entries:
+    output: true
+    permalink: /:categories/:title/
+
+feed:
+  collections:
+    - entries
+
 # These settings control how pages and collections are included in the site
 defaults:
-  # _posts
+  # _entries
   - scope:
       path: ""
-      type: posts
+      type: entries
     values:
-      layout: single
+      layout: blog
       published: true
-      author_profile: true
-      read_time: true
-      share: true
-      related: true
   # _pages
   - scope:
       path: ""

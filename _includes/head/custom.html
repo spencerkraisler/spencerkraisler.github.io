@@ -27,12 +27,14 @@
 
 <!-- Support for MatJax -->
 <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+<script src="{{ base_path }}/assets/js/macros.js"></script>
 <script>
   window.MathJax = {
     tex: {
       inlineMath: [['$', '$'], ['\\(', '\\)']],
       displayMath: [['$$', '$$'], ['\\[', '\\]']],
-      tags: 'ams'
+      tags: 'ams',
+      macros: window.siteMacros
     }
   };
 </script>
