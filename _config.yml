@@ -24,9 +24,9 @@ author:
   avatar           : "personal_image.jpeg"
   name             : "Spencer Kraisler"
   pronouns         : # example: "she/her"  
-  bio              : "PhD Canidate at RAIN Lab"
+  bio              : "Aerospace Scientist at Amazon Leo"
   location         : "Seattle, WA"
-  employer         : "University of Washington"
+  employer         : "U of Washington"
   uri              : # URL
   email            : 
 
@@ -177,13 +177,6 @@ kramdown:
   enable_coderay: false
 
 
-# These settings control the types of collections used by the template
-collections:
-  talks:
-    output: true
-    permalink: /:collection/:path/
-
-
 # These settings control how pages and collections are included in the site
 defaults:
   # _posts
@@ -204,14 +197,6 @@ defaults:
     values:
       layout: single
       author_profile: true
-  # _talks
-  - scope:
-      path: ""
-      type: talks
-    values:
-      layout: talk
-      author_profile: true
-      share: true
 
 
 # Sass/SCSS

@@ -1,36 +1,27 @@
 ---
 permalink: /
-title: "👋 Hello there, I'm Spencer!"
 author_profile: true
 redirect_from: 
   - /about/
   - /about.html
 ---
 
-I recently completed my PhD in Aerospace Engineering at the University of Washington, where I worked with Prof. Mehran Mesbahi in the RAIN Lab.
+Hi! I'm an aerospace scientist at Amazon Leo. I work on satellite attitude determination and control. 
 
-I work at the intersection of **optimization, control, and machine learning**, with a focus on geometric methods for reliable autonomous systems.
+I did my PhD in Aeronautics & Astronautics at the University of Washington. My advisor was Prof. Mehran Mesbahi at the Robotics, Aerospace, and Information Networks (RAIN) Lab. My dissertation was about applications of Riemannian geometry to trajectory optimization and controller design.
 
-## Research Focus
 
-My dissertation studies how **Riemannian optimization** can improve both open-loop trajectory optimization and closed-loop controller synthesis.
-
-In short, I build optimization methods that are mathematically rigorous, computationally efficient, and practical for real engineering systems.
 
 ## Current Interests
 
-- Geometric methods for learning and control
-- Reliable optimization for safety-critical autonomy
-- Bridging control-theoretic guarantees with modern ML practice
+- Riemannian geometry
+- Special and general relativity
+- Geometric mechanics
+- Attitude determination and control
 
-For updates on talks, papers, awards, and milestones, see the [Blog](/blog/).
+I occasionally write [blog](/blog/) posts on mathematics I've been learning, along with interactive applets.
 
 ## Publications & CV
 
 - [Publications on Google Scholar](https://scholar.google.com/citations?user=BlVqeAcAAAAJ&hl=en&oi=ao)
 - [CV (PDF)](/files/myresume.pdf)
-
-## Let’s Connect
-
-If you’re interested in collaborating on optimization, control, or autonomous systems, please connect with me on [LinkedIn](https://www.linkedin.com/in/spencer-kraisler/).
-

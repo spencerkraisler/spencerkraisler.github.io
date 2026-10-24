@@ -399,3 +399,24 @@
   font-size: $type-size-6;
   text-transform: uppercase;
 }
+
+.page__content,
+.archive {
+  font-size: 0.9em;
+}
+
+.page__byline {
+  margin: 0.4em 0 1.5em;
+  padding-bottom: 1em;
+  font-size: $type-size-6;
+  color: $gray;
+  border-bottom: 1px solid $border-color;
+}
+
+.page__byline-sep {
+  margin: 0 0.4em;
+}
+
+.post .page__content {
+  color: $darker-gray;
+}

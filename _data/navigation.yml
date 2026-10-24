@@ -8,11 +8,11 @@ main:
   # - title: "Teaching"
   #   url: /teaching/    
     
-  - title: "Dissertation"
-    url: /dissertation/
-
   - title: "Blog"
     url: /blog/
+
+  - title: "Dissertation"
+    url: /dissertation/
         
   # - title: "Guide"
   #   url: /markdown/
