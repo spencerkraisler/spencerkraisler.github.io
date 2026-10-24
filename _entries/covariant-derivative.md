@@ -96,11 +96,7 @@ $$
 a^k := \ddot q^k + \Gamma^k_{ij}\left(q\right)\, \dot q^i \dot q^j .
 $$
 
-We call it the **covariant acceleration**. By the computation in the previous section, it is the Euler–Lagrange expression with its index raised:
-
-$$
-a^k = \frac{1}{2} g^{ki} \left( \frac{d}{dt} \frac{\partial L}{\partial \dot q^i} - \frac{\partial L}{\partial q^i} \right) .
-$$
+We can call it the **covariant acceleration**. 
 
 ### What does $\bfa$ measure?
 
@@ -116,7 +112,7 @@ Isn't that neat? The covariant derivative is usually introduced axiomatically, v
 
 ### Variations
 
-To make "failure to extremize" precise, we perturb the curve and see how the energy responds. Fix a curve $q$. A **[variation](https://en.wikipedia.org/wiki/Calculus_of_variations)** of $q$ is a smooth vector field $\delta q^i\left(t\right)$ along $q$ with $\delta q^i\left(t_0\right) = \delta q^i\left(t_1\right) = 0$.
+To make "failure to extremize" precise, we perturb the curve and see how the energy responds. Fix a curve $q$. A **variation** of $q$ is a smooth vector field $\delta q^i\left(t\right)$ along $q$ with $\delta q^i\left(t_0\right) = \delta q^i\left(t_1\right) = 0$.
 
 For a small real parameter $s$, define the perturbed curve $q_s$ whose coordinates are
 
@@ -124,7 +120,7 @@ $$
 q_s^i\left(t\right) := q^i\left(t\right) + s\, \delta q^i\left(t\right) .
 $$
 
-The **first variation** of $E$ at $q$ in the direction $\delta q$ is a scalar defined as
+The **[first variation](https://en.wikipedia.org/wiki/Fr%C3%A9chet_derivative)** of $E$ at $q$ in the direction $\delta q$ is a scalar defined as
 
 $$
 \delta E_q [ \delta q ] := \frac{d}{ds} E [ q_s ] \Big|_{s = 0} = \lim_{s \to 0} \int_{t_0}^{t_1} \frac{L\left(q_s, \dot q_s\right) - L\left(q, \dot q\right)}{s} \, dt = \int_{t_0}^{t_1} \lim_{s \to 0} \frac{L\left(q_s, \dot q_s\right) - L\left(q, \dot q\right)}{s} \, dt .
@@ -163,63 +159,7 @@ $$
 Substituting into $\left(6\right)$,
 
 $$
-\delta E_q [ \delta q ] = - 2 \int_{t_0}^{t_1} g_{ik}\, a^k \delta q^i \, dt .
+\delta E_q [ \delta q ] = - 2 \int_{t_0}^{t_1} g_{ik}\, a^k \delta q^i \, dt = -2 \int_{t_0}^{t_1} g(\bfa, \delta \bfq) \ dt .
 $$
 
-The integrand is the Riemannian metric applied to $-2 \bfa$ and $\delta q$. In particular, $\delta E_q [ \delta q ] = 0$ for every $\delta q$ exactly when $\bfa = 0$. More than that, since $\delta E_q$ is the integral of $g\left(-2 \bfa, \delta q\right)$, $-2 \bfa$ is the gradient of $E$ at $q$, so $\bfa$ points in the direction of steepest energy descent, and its size measures how far $q$ is from being a critical point of $E$. This gives $\bfa$ a variational meaning. Next, we compute $\delta E_q$ a second way, which is where derivatives of arbitrary vector fields enter.
-
-## The covariant derivative along a curve
-
-We saw that $\bfa = \frac{D}{dt} \dot q$ measures how much the velocity fails to stay constant along $q$. Can we ask the same of any vector field $V$ along $q$? That needs a derivative of $V$ that makes sense on a curved manifold, and the energy suggests a natural one. A variation $\delta q$ is itself a vector field along $q$, and $\delta E_q [ \delta q ]$ must depend on how $\delta q$ changes along the curve. So we ask which derivative of $\delta q$ it depends on.
-
-### Which derivative of $\delta q$ does $E$ see?
-
-We compute $\delta E_q$ directly from $L\left(q, \dot q\right) = g_{ij} \dot q^i \dot q^j$, this time without integrating by parts. Since $\frac{d q_s^l}{ds} = \delta q^l$ and $\frac{d \dot q_s^i}{ds} = \delta \dot q^i$, the product and chain rules give
-
-$$
-\frac{d}{ds} \left( g_{ik}\left(q_s\right) \dot q_s^i \dot q_s^k \right) \Big|_{s = 0} = \frac{\partial g_{ik}}{\partial q^l} \dot q^i \dot q^k \delta q^l + g_{ik}\, \delta \dot q^i \dot q^k + g_{ik}\, \dot q^i \delta \dot q^k .
-$$
-
-The metric is symmetric, so the last two terms are equal and combine into $2 g_{ij}\, \dot q^i \delta \dot q^j$. Integrating over $t$,
-
-$$
-\delta E_q [ \delta q ] = \int_{t_0}^{t_1} \left( \frac{\partial g_{ik}}{\partial q^l} \dot q^i \dot q^k \delta q^l + 2 g_{ij} \dot q^i \delta \dot q^j \right) dt .
-$$
-
-The ordinary derivative $\delta \dot q$ only appears in the second term. To see what is going on, we want both terms in the form $2 g_{ij} \dot q^i \left( \cdots \right)$. The Christoffel symbols let us do this. Lowering an index in their definition gives
-
-$$
-g_{ij} \Gamma^j_{kl} = \frac{1}{2} \left( \frac{\partial g_{ik}}{\partial q^l} + \frac{\partial g_{il}}{\partial q^k} - \frac{\partial g_{kl}}{\partial q^i} \right) .
-$$
-
-Contract this with $\dot q^i \dot q^k \delta q^l$. The last two terms on the right cancel after relabeling $i \leftrightarrow k$, which leaves
-
-$$
-2 g_{ij} \Gamma^j_{kl} \dot q^i \dot q^k \delta q^l = \frac{\partial g_{ik}}{\partial q^l} \dot q^i \dot q^k \delta q^l .
-$$
-
-The right-hand side is exactly the first term of $\delta E_q$. Replacing it and factoring out $2 g_{ij} \dot q^i$, we get
-
-$$
-\delta E_q [ \delta q ] = 2 \int_{t_0}^{t_1} g_{ij}\, \dot q^i \left( \delta \dot q^j + \Gamma^j_{kl}\, \dot q^k \delta q^l \right) dt . \tag{7}
-$$
-
-So the energy does not see the ordinary derivative $\delta \dot q$ on its own. It only sees the combination in the bracket. That combination is the derivative we were looking for. Next, we give it a name and apply it to any vector field.
-
-### The covariant derivative of any vector field
-
-We now turn the bracket in $\left(7\right)$ into a derivative of any vector field. The bracket is a formula in the components of $\delta q$ and $\delta \dot q$, and nothing in it requires $\delta q$ to be a variation. So for any vector field $V^k\left(t\right)$ along $q$, we define the **covariant derivative** of $V$ along $q$:
-
-$$
-\frac{D V^k}{dt} := \dot V^k + \Gamma^k_{ij}\, \dot q^i V^j .
-$$
-
-In this notation, $\left(7\right)$ reads
-
-$$
-\delta E_q [ \delta q ] = 2 \int_{t_0}^{t_1} g \left( \dot q, \frac{D \delta q}{dt} \right) dt .
-$$
-
-Plugging in $V = \dot q$ gives $\frac{D \dot q^k}{dt} = \ddot q^k + \Gamma^k_{ij} \dot q^i \dot q^j = a^k$, the covariant acceleration from before. So the geodesic equation says $\frac{D \dot q}{dt} = 0$: the velocity does not change as we move along $q$. For a general vector field, $\frac{D V}{dt} = 0$ means that $V$ stays constant along $q$, in the sense of being [parallel](https://en.wikipedia.org/wiki/Parallel_transport).
-
-In short, $\frac{D V}{dt}$ measures the failure of $V$ to stay constant along $q$, exactly as $\bfa$ measures the failure of $\dot q$ to do so. A geodesic is a curve whose own velocity never fails.
+The integrand is the Riemannian metric applied to $-2 \bfa$ and $\delta q$. In particular, $\delta E_q [ \delta q ] = 0$ for every $\delta q$ exactly when $\bfa = 0$. More than that, $-2 \bfa$ is the gradient of $E$ at $q$, so $\bfa$ points in the direction of steepest energy descent, and its size measures how far $q$ is from being a critical point of $E$. This gives $\bfa$ a variational meaning. 
