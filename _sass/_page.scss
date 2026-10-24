@@ -36,6 +36,7 @@
 
 .page__title {
   margin-top: 0;
+  color: #61afef;
   line-height: 1;
 
   & + .page__meta {
@@ -53,6 +54,15 @@
   h2 {
     padding-bottom: 0.5em;
     border-bottom: 1px solid $border-color;
+    color: #61afef;
+  }
+
+  h3, h4 {
+    color: #61afef;
+  }
+
+  strong, b {
+    color: #cfe3f7;
   }
 
   p, li, dl {

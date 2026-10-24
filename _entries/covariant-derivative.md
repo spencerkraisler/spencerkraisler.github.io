@@ -4,177 +4,47 @@ date: 2026-10-24
 tags: [riemannian-geometry, geodesics, covariant-derivative]
 ---
 
-I recently discovered a really fun intuition about the covariant derivative. A geodesic is a curve that locally minimizes length, or more conveintnly, energy. The covariant derivative of a curve's time derivative can be thought of as its failure to be a geodesic. I found this to be really neat and wanted to share it with you! :) 
+I recently discovered a really fun intuition about the [covariant derivative](https://en.wikipedia.org/wiki/Covariant_derivative). A [geodesic](https://en.wikipedia.org/wiki/Geodesic) is a curve that locally minimizes length, or more conveniently, energy. The covariant derivative of a curve's time derivative can be thought of as its failure to be a geodesic. I found this to be really neat and wanted to share it with you! :) 
 
+## Setup
 
+First, notation: the manifold, the metric and its inverse, and the summation convention.
 
-First, we derive the geodesic equation from the energy functional. We next show that plugging an arbitray curve into the left hand side the geodesic equation gives us a vector $\bfa = (a^k)$ that measures the curve's failure to be a geodesic. Finally, it extracts the covariant derivative $\frac{D}{dt}$ from $a^k$ and verifies its defining properties.
+Let $\left(\calM,g\right)$ be an $n$-dimensional [Riemannian manifold](https://en.wikipedia.org/wiki/Riemannian_manifold). For $q \in \calM$, we write the coordinates of $q$ with respect to some coordinate chart as $q \equiv \left(q^1, \dots, q^n\right)$.
 
-## 0. Setup
-
-Let $(\calM,g)$ be an $n$-dimensional Riemannian manifold. For $q \in \calM$, we write the coordinates of $q$ with respect to some coordinate chart as $ q \cong (q^1, \dots, q^n)$.
-
-- $g_{ij}(q)$ are the components of the metric. They are symmetric and positive definite.
-- $g^{ij}(q)$ are the components of the inverse matrix, so $g^{ij} g_{jk} = \delta^i_k$, where $\delta^i_k$ is the Kronecker delta.
+- $g_{ij}$ are the components of the [metric](https://en.wikipedia.org/wiki/Metric_tensor). They are symmetric and positive definite.
+- $g^{ij}$ are the components of the inverse matrix, so $g^{ij} g_{jk} = \delta^i_k$, where $\delta^i_k$ is the Kronecker delta.
 - Repeated indices are summed from $1$ to $n$.
 
-## 1. Geodesics as critical points of energy
+## The geodesic equation
 
-Let $L$ be the squared Riemannian norm of the velocity, and let $E$ be its integral:
-
-$$
-L(q, \dot q) = \| \dot q \|^2 = g_{ij}(q)\, \dot q^i \dot q^j, \;\;\; E[q] = \int_{t_0}^{t_1} L \, dt .
-$$
-
-**Variations.** Fix a curve $q$. A **variation** of $q$ is a smooth vector field $\delta q^i(t)$ along $q$ with $\delta q^i(t_0) = \delta q^i(t_1) = 0$. For a small real parameter $s$, define the perturbed curve
+Recall that geodesics are curves that extremize the length functional on a Riemannian manifold:
 
 $$
-q_s^i(t) = q^i(t) + s\, \delta q^i(t) .
+\Lambda[q] := \int_{t_0}^{t_1} \sqrt{g_{ij}\, \dot q^i \dot q^j} \, dt .
 $$
 
-The **first variation** of $E$ at $q$ in the direction $\delta q$ is the directional derivative
+They also extremize the energy functional
 
 $$
-\delta E_q [ \delta q ] = \frac{d}{ds} E [ q_s ] |_{s = 0} .
+E[q] := \int_{t_0}^{t_1} L\left(q, \dot q\right) \, dt, \quad L\left(q, \dot q\right) := g_{ij}\, \dot q^i \dot q^j .
 $$
 
-It is linear in $\delta q$, so $\delta E_q$ is a linear functional on variations: the differential of $E$ at $q$. The formula $q + s\, \delta q$ depends on the chart, but its derivative at $s = 0$ does not. Any smooth family $q_s$ with $q_0 = q$ and $\frac{d q_s^i}{ds} |_{s=0} = \delta q^i$ gives the same value.
+Here we only look at a small piece of the curve $q$ between $t_0$ and $t_1$, since extremizing length is a local property.
 
-A curve $q$ is a **geodesic** if $\delta E_q [ \delta q ] = 0$ for every variation $\delta q$.
-
-**Euler–Lagrange form.** We take the standard first variation formula as given (see Appendix A):
+Recall extremal curves of $E$ necessarily satisfies the **[Euler–Lagrange equations](https://en.wikipedia.org/wiki/Euler%E2%80%93Lagrange_equation)**
 
 $$
-\delta E_q [ \delta q ] = - \int_{t_0}^{t_1} \mathcal{E}_i \, \delta q^i \, dt, \;\;\; \mathcal{E}_i = \frac{d}{dt} \frac{\partial L}{\partial \dot q^i} - \frac{\partial L}{\partial q^i} .
+\frac{d}{dt} \frac{\partial L}{\partial \dot q^i} - \frac{\partial L}{\partial q^i} = 0 . \tag{1}
 $$
 
-The expression $\mathcal{E}_i$ is the Euler–Lagrange expression of $L$.
-
-**Christoffel symbols.** Define
+Since $L$ is quadratic, the two partial derivatives in (1) are nicely computed as
 
 $$
-\Gamma^l_{jk} = \frac{1}{2} g^{li} ( \frac{\partial g_{ij}}{\partial q^k} + \frac{\partial g_{ik}}{\partial q^j} - \frac{\partial g_{jk}}{\partial q^i} ) .
+\frac{\partial L}{\partial \dot q^i} = 2 g_{ij} \dot q^j, \quad \frac{\partial L}{\partial q^i} = \frac{\partial g_{jk}}{\partial q^i} \dot q^j \dot q^k . \tag{2}
 $$
 
-They are symmetric in $j$ and $k$. Substituting $L$ into $\mathcal{E}_i$ gives (Appendix A)
-
-$$
-\mathcal{E}_i = 2 g_{il} ( \ddot q^l + \Gamma^l_{jk} \dot q^j \dot q^k ) .
-$$
-
-**Geodesic equation.** Setting $\mathcal{E}_i = 0$ and multiplying by $\frac{1}{2} g^{ki}$:
-
-$$
-\ddot q^k + \Gamma^k_{ij}(q)\, \dot q^i \dot q^j = 0 .
-$$
-
-## 2. Covariant acceleration of an arbitrary curve
-
-Now let $q$ be any curve. Define the **covariant acceleration**
-
-$$
-a^k = \frac{1}{2} g^{ki} \mathcal{E}_i = \ddot q^k + \Gamma^k_{ij}(q)\, \dot q^i \dot q^j .
-$$
-
-Equivalently, $\ddot q^k = a^k - \Gamma^k_{ij} \dot q^i \dot q^j$. The first variation becomes
-
-$$
-\delta E_q [ \delta q ] = - 2 \int_{t_0}^{t_1} g_{ik}\, a^k\, \delta q^i \, dt .
-$$
-
-**Proposition.** $q$ is a geodesic if and only if $a^k(t) = 0$ for all $t$.
-
-*Proof.* If $a^k = 0$, the integrand vanishes, so $\delta E_q [ \delta q ] = 0$ for every variation. Conversely, suppose $\delta E_q [ \delta q ] = 0$ for every variation. Let $\varphi(t)$ be smooth, positive on $(t_0, t_1)$, and zero at the endpoints. Take $\delta q^i = \varphi\, a^i$. Then
-
-$$
-0 = \delta E_q [ \varphi\, a ] = - 2 \int_{t_0}^{t_1} \varphi\, g_{ik}\, a^i a^k \, dt .
-$$
-
-The integrand is continuous and nonnegative, since $\varphi \ge 0$ and $g$ is positive definite. So it vanishes identically, which forces $a^k = 0$. $\blacksquare$
-
-**Interpretation.** Equip variations with the inner product $\langle u, w \rangle = \int_{t_0}^{t_1} g_{ik}\, u^i w^k \, dt$. Then $\delta E_q [ \delta q ] = \langle -2a, \delta q \rangle$ for every variation $\delta q$. So $-2a$ is the gradient of $E$ at $q$, and $a$ points in the direction of steepest energy descent. Its size $\sqrt{g_{ik} a^i a^k}$ measures how far $q$ is from being a critical point of $E$. In this sense, $a^k$ is the failure of $q$ to be a geodesic.
-
-Note that $a = 0$ means $q$ is a critical point of $E$, not necessarily a minimizer. Short geodesic segments minimize; long ones may not.
-
-## 3. The covariant derivative along a curve
-
-In $a^k$, one copy of $\dot q$ is differentiated and the other enters through $\Gamma$. Replace the differentiated copy by an arbitrary vector field $v^k(t)$ along the curve. This defines
-
-$$
-\frac{D v^k}{dt} = \dot v^k + \Gamma^k_{ij}(q)\, \dot q^i v^j .
-$$
-
-By construction, $\frac{D \dot q^k}{dt} = a^k$.
-
-**Properties.** Let $v^k, w^k$ be vector fields along the curve and $f(t)$ a scalar function.
-
-1. **Linearity.** $\frac{D (v + w)^k}{dt} = \frac{D v^k}{dt} + \frac{D w^k}{dt}$.
-2. **Leibniz rule.** $\frac{D (f v^k)}{dt} = \dot f\, v^k + f \frac{D v^k}{dt}$.
-3. **Metric compatibility.**
-$$
-\frac{d}{dt} ( g_{ij} v^i w^j ) = g_{ij} \frac{D v^i}{dt} w^j + g_{ij} v^i \frac{D w^j}{dt} .
-$$
-4. **Symmetry.** For a two-parameter family of curves $q(t, s)$,
-$$
-\frac{D}{ds} \frac{\partial q^k}{\partial t} = \frac{D}{dt} \frac{\partial q^k}{\partial s} .
-$$
-
-*Proofs.* Properties 1 and 2 are immediate from the formula.
-
-For property 4, both sides equal $\frac{\partial^2 q^k}{\partial t\, \partial s} + \Gamma^k_{ij} \frac{\partial q^i}{\partial t} \frac{\partial q^j}{\partial s}$, because $\Gamma^k_{ij}$ is symmetric in $i, j$.
-
-For property 3, lower an index: $\Gamma_{ikj} = g_{il} \Gamma^l_{kj}$. From the definition,
-
-$$
-\Gamma_{ikj} = \frac{1}{2} ( \frac{\partial g_{ik}}{\partial q^j} + \frac{\partial g_{ij}}{\partial q^k} - \frac{\partial g_{kj}}{\partial q^i} ), \;\;\;
-\Gamma_{jki} = \frac{1}{2} ( \frac{\partial g_{jk}}{\partial q^i} + \frac{\partial g_{ji}}{\partial q^k} - \frac{\partial g_{ki}}{\partial q^j} ) .
-$$
-
-Adding, the first and last terms cancel in pairs. This leaves the identity $(\ast)$:
-
-$$
-\Gamma_{ikj} + \Gamma_{jki} = \frac{\partial g_{ij}}{\partial q^k} .
-$$
-
-Now expand the left side of property 3 with the product rule. Its metric term is $\frac{\partial g_{ij}}{\partial q^k} \dot q^k v^i w^j$. By $(\ast)$, this equals $\Gamma_{jki} \dot q^k v^i w^j + \Gamma_{ikj} \dot q^k v^i w^j$. These are exactly the $\Gamma$ terms of $g_{ij} \frac{D v^i}{dt} w^j$ and $g_{ij} v^i \frac{D w^j}{dt}$. $\blacksquare$
-
-**Uniqueness.** Properties 3 and 4 determine $\Gamma$. Suppose some $\Gamma^l_{kj}$, symmetric in $k, j$, satisfies $(\ast)$. Write $(\ast)$ for the index triples $(i, k, j)$, $(i, j, k)$, and $(j, i, k)$. Add the first two and subtract the third. Using the symmetry of $\Gamma_{ikj}$ in its last two indices, four terms cancel and two combine, leaving
-
-$$
-2\, \Gamma_{ikj} = \frac{\partial g_{ij}}{\partial q^k} + \frac{\partial g_{ik}}{\partial q^j} - \frac{\partial g_{kj}}{\partial q^i} ,
-$$
-
-which is the formula from Section 1. So $D/dt$ is not a choice. It is the unique operator along curves that is compatible with the metric and symmetric, and the variational problem for $E$ produces it automatically.
-
-## 4. Remarks
-
-**Tensoriality.** Neither $\dot v^k$ nor $\Gamma^k_{ij}$ transforms as a tensor under a change of chart, but their non-tensorial parts cancel. So $\frac{D v^k}{dt}$ is a vector. For $v = \dot q$ there is a direct argument: $\delta E_q [ \delta q ]$ is chart-independent and $\delta q^i$ is an arbitrary vector, so $g_{ik} a^k$ must be a covector.
-
-**Covector form.** Let $p_i = g_{ij} \dot q^j$ be the velocity covector, that is, the velocity with its index lowered. Its covariant derivative is $\frac{D p_i}{dt} = \dot p_i - \Gamma^k_{ij} \dot q^j p_k$. Expanding shows
-
-$$
-\frac{D p_i}{dt} = \frac{1}{2} \mathcal{E}_i = g_{ik}\, a^k .
-$$
-
-So the Euler–Lagrange expression is, up to the factor $2$, the covariant derivative of the velocity covector. Neither $\frac{d}{dt} \frac{\partial L}{\partial \dot q^i}$ nor $\frac{\partial L}{\partial q^i}$ is a covector on its own; only their difference is.
-
-**Forces.** Adding a potential $V(q)$ to the action, $S[q] = \int (L - V)\, dt$, gives $2 g_{ik}\, a^k = - \frac{\partial V}{\partial q^i}$. The curve then fails to be a geodesic by exactly the applied force.
-
-## Appendix A. The first variation and $\mathcal{E}_i$
-
-**First variation.** With $q_s = q + s\, \delta q$, we have $\dot q_s = \dot q + s\, \frac{d\, \delta q}{dt}$. Differentiating under the integral and using the chain rule,
-
-$$
-\delta E_q [ \delta q ] = \int_{t_0}^{t_1} ( \frac{\partial L}{\partial q^i} \delta q^i + \frac{\partial L}{\partial \dot q^i} \frac{d\, \delta q^i}{dt} ) dt .
-$$
-
-Integrate the second term by parts. The boundary term vanishes because $\delta q$ does. Moving the time derivative off $\delta q$ produces the minus sign. This gives
-
-$$
-\delta E_q [ \delta q ] = - \int_{t_0}^{t_1} \mathcal{E}_i \, \delta q^i \, dt, \;\;\; \mathcal{E}_i = \frac{d}{dt} \frac{\partial L}{\partial \dot q^i} - \frac{\partial L}{\partial q^i} .
-$$
-
-**Computing $\mathcal{E}_i$.** The velocity derivative is $\frac{\partial L}{\partial \dot q^i} = 2 g_{ij} \dot q^j$. The metric depends on $t$ only through $q(t)$, so
+Using the simply product rule, the time derivative of $\frac{\partial L}{\partial \dot q^i}$ is 
 
 $$
 \frac{d}{dt} \frac{\partial L}{\partial \dot q^i} = 2 g_{ij} \ddot q^j + 2 \frac{\partial g_{ij}}{\partial q^k} \dot q^k \dot q^j .
@@ -183,23 +53,173 @@ $$
 The last term is contracted with the symmetric product $\dot q^j \dot q^k$, so only its symmetric part in $j, k$ survives:
 
 $$
-2 \frac{\partial g_{ij}}{\partial q^k} \dot q^k \dot q^j = ( \frac{\partial g_{ij}}{\partial q^k} + \frac{\partial g_{ik}}{\partial q^j} ) \dot q^j \dot q^k .
+2 \frac{\partial g_{ij}}{\partial q^k} \dot q^k \dot q^j = \left( \frac{\partial g_{ij}}{\partial q^k} + \frac{\partial g_{ik}}{\partial q^j} \right) \dot q^j \dot q^k .
 $$
 
-The position derivative is
+Substituting this and $\left(2\right)$ into the left-hand side of $\left(1\right)$ gives
 
 $$
-\frac{\partial L}{\partial q^i} = \frac{\partial g_{jk}}{\partial q^i} \dot q^j \dot q^k .
+\frac{d}{dt} \frac{\partial L}{\partial \dot q^i} - \frac{\partial L}{\partial q^i} = 2 g_{ij} \ddot q^j + \left( \frac{\partial g_{ij}}{\partial q^k} + \frac{\partial g_{ik}}{\partial q^j} - \frac{\partial g_{jk}}{\partial q^i} \right) \dot q^j \dot q^k . \tag{3}
 $$
 
-Subtracting,
+To clean this up, define the **[Christoffel symbols](https://en.wikipedia.org/wiki/Christoffel_symbols)**
 
 $$
-\mathcal{E}_i = 2 g_{ij} \ddot q^j + ( \frac{\partial g_{ij}}{\partial q^k} + \frac{\partial g_{ik}}{\partial q^j} - \frac{\partial g_{jk}}{\partial q^i} ) \dot q^j \dot q^k .
+\Gamma^l_{jk} := \frac{1}{2} g^{li} \left( \frac{\partial g_{ij}}{\partial q^k} + \frac{\partial g_{ik}}{\partial q^j} - \frac{\partial g_{jk}}{\partial q^i} \right) . \tag{4}
 $$
 
-By the definition of $\Gamma^l_{jk}$ and $g_{il} g^{lm} = \delta_i^m$, the coefficient of $\dot q^j \dot q^k$ in the second term equals $2 g_{il} \Gamma^l_{jk}$. Hence
+They are symmetric in $j$ and $k$. Since $g_{il} g^{lm} = \delta_i^m$, the coefficient of $\dot q^j \dot q^k$ in $\left(3\right)$ is exactly $2 g_{il} \Gamma^l_{jk}$ by $\left(4\right)$. Hence
 
 $$
-\mathcal{E}_i = 2 g_{il} ( \ddot q^l + \Gamma^l_{jk} \dot q^j \dot q^k ) .
+\frac{d}{dt} \frac{\partial L}{\partial \dot q^i} - \frac{\partial L}{\partial q^i} = 2 g_{il} \left( \ddot q^l + \Gamma^l_{jk} \dot q^j \dot q^k \right) .
 $$
+
+Setting the left-hand side of $\left(1\right)$ to zero and multiplying by $\frac{1}{2} g^{ki}$ yields the **geodesic equation**
+
+$$
+\ddot q^k + \Gamma^k_{ij}\left(q\right)\, \dot q^i \dot q^j = 0 .
+$$
+
+So in conclusion, if we want to compute a geodesic whose position at time $t$ is $q\left(t\right) \equiv \left(q^1\left(t\right), \dots, q^n\left(t\right)\right)$ and whose velocity is $\dot q\left(t\right) \equiv \left(\frac{d q^1}{dt}\left(t\right), \dots, \frac{d q^n}{dt}\left(t\right)\right)$, we solve the second-order ODE
+
+$$
+\frac{d^2 q^k}{dt^2} + \Gamma^k_{ij}\left(q\right) \frac{d q^i}{dt} \frac{d q^j}{dt} = 0
+$$
+
+with these initial conditions. 
+
+## Covariant acceleration of an arbitrary curve
+
+Plugging an arbitrary curve into the left-hand side of the geodesic equation gives a vector $\bfa \in T_{q\left(t\right)} \calM$ with components
+
+$$
+a^k := \ddot q^k + \Gamma^k_{ij}\left(q\right)\, \dot q^i \dot q^j .
+$$
+
+We call it the **covariant acceleration**. By the computation in the previous section, it is the Euler–Lagrange expression with its index raised:
+
+$$
+a^k = \frac{1}{2} g^{ki} \left( \frac{d}{dt} \frac{\partial L}{\partial \dot q^i} - \frac{\partial L}{\partial q^i} \right) .
+$$
+
+### What does $\bfa$ measure?
+
+For one, $\bfa = 0$ if and only if the curve $q$ is a geodesic. So, in a sense, $\bfa$ measures the failure of $q$ to be a geodesic. Being a geodesic is a local property: at every instant, the curve is extremizing length (or energy). So $\bfa$ can also be interpreted as the failure of $q$ to extremize length. The curve is traveling a bit more distance than it needs to.
+
+More importantly, as the title of this entry suggests, $\bfa$ is precisely the **covariant derivative** of $\dot q$:
+
+$$
+\frac{D}{dt} \dot q = \nabla_{\dot q} \dot q = \bfa .
+$$
+
+Isn't that neat? The covariant derivative is usually introduced axiomatically, via the [Fundamental Theorem of Riemannian Geometry](https://en.wikipedia.org/wiki/Fundamental_theorem_of_Riemannian_geometry): it is the unique operator satisfying a short list of properties. I like to call this the **algebraic way** of doing things, as opposed to the constructive, **analytic** definition of the derivative as a limit that we learn in calculus. I understand why it is done this way, and I enjoy it: in my opinion, a derivative operator is more of an algebraic object than an analytic one. Still, it is nice that there is an analytic route to the covariant derivative as well, and we arrived at it without using that theorem.
+
+### Variations
+
+To make "failure to extremize" precise, we perturb the curve and see how the energy responds. Fix a curve $q$. A **[variation](https://en.wikipedia.org/wiki/Calculus_of_variations)** of $q$ is a smooth vector field $\delta q^i\left(t\right)$ along $q$ with $\delta q^i\left(t_0\right) = \delta q^i\left(t_1\right) = 0$.
+
+For a small real parameter $s$, define the perturbed curve $q_s$ whose coordinates are
+
+$$
+q_s^i\left(t\right) := q^i\left(t\right) + s\, \delta q^i\left(t\right) .
+$$
+
+The **first variation** of $E$ at $q$ in the direction $\delta q$ is a scalar defined as
+
+$$
+\delta E_q [ \delta q ] := \frac{d}{ds} E [ q_s ] \Big|_{s = 0} = \lim_{s \to 0} \int_{t_0}^{t_1} \frac{L\left(q_s, \dot q_s\right) - L\left(q, \dot q\right)}{s} \, dt = \int_{t_0}^{t_1} \lim_{s \to 0} \frac{L\left(q_s, \dot q_s\right) - L\left(q, \dot q\right)}{s} \, dt .
+$$
+
+It is linear in $\delta q$. The curve $q_s$ depends on the coordinate chart, but the derivative at $s = 0$ does not. A curve $q$ is extremal for $E$ exactly when $\delta E_q [ \delta q ] = 0$ for every variation $\delta q$. Next, we compute $\delta E_q$ explicitly, which is where the Euler–Lagrange equations come from.
+
+### The Euler–Lagrange equations
+
+We now compute $\delta E_q$ explicitly and see the Euler–Lagrange equations fall out. Since $\dot q_s = \dot q + s\, \delta \dot q$, differentiating under the integral and using the chain rule gives
+
+$$
+\delta E_q [ \delta q ] = \int_{t_0}^{t_1} \left( \frac{\partial L}{\partial q^i} \delta q^i + \frac{\partial L}{\partial \dot q^i} \delta \dot q^i \right) dt . \tag{5}
+$$
+
+Integrate the second term of $\left(5\right)$ by parts. The boundary term vanishes because $\delta q$ does, and moving the time derivative off $\delta q$ produces a minus sign:
+
+$$
+\int_{t_0}^{t_1} \frac{\partial L}{\partial \dot q^i} \delta \dot q^i \, dt = \left[ \frac{\partial L}{\partial \dot q^i} \delta q^i \right]_{t_0}^{t_1} - \int_{t_0}^{t_1} \left( \frac{d}{dt} \frac{\partial L}{\partial \dot q^i} \right) \delta q^i \, dt = - \int_{t_0}^{t_1} \left( \frac{d}{dt} \frac{\partial L}{\partial \dot q^i} \right) \delta q^i \, dt .
+$$
+
+Substituting this into $\left(5\right)$ gives
+
+$$
+\delta E_q [ \delta q ] = - \int_{t_0}^{t_1} \left( \frac{d}{dt} \frac{\partial L}{\partial \dot q^i} - \frac{\partial L}{\partial q^i} \right) \delta q^i \, dt . \tag{6}
+$$
+
+Now suppose $\delta E_q [ \delta q ] = 0$ for every variation $\delta q$. By the [fundamental lemma of the calculus of variations](https://en.wikipedia.org/wiki/Fundamental_lemma_of_the_calculus_of_variations), the bracket in $\left(6\right)$ must vanish identically. These are exactly the Euler–Lagrange equations $\left(1\right)$.
+
+Earlier, we showed that the bracket in $\left(6\right)$ equals $2 g_{ik} \left( \ddot q^k + \Gamma^k_{ij} \dot q^i \dot q^j \right)$, which is $2 g_{ik} a^k$:
+
+$$
+\frac{d}{dt} \frac{\partial L}{\partial \dot q^i} - \frac{\partial L}{\partial q^i} = 2 g_{ik}\, a^k .
+$$
+
+Substituting into $\left(6\right)$,
+
+$$
+\delta E_q [ \delta q ] = - 2 \int_{t_0}^{t_1} g_{ik}\, a^k \delta q^i \, dt .
+$$
+
+The integrand is the Riemannian metric applied to $-2 \bfa$ and $\delta q$. In particular, $\delta E_q [ \delta q ] = 0$ for every $\delta q$ exactly when $\bfa = 0$. More than that, since $\delta E_q$ is the integral of $g\left(-2 \bfa, \delta q\right)$, $-2 \bfa$ is the gradient of $E$ at $q$, so $\bfa$ points in the direction of steepest energy descent, and its size measures how far $q$ is from being a critical point of $E$. This gives $\bfa$ a variational meaning. Next, we compute $\delta E_q$ a second way, which is where derivatives of arbitrary vector fields enter.
+
+## The covariant derivative along a curve
+
+We saw that $\bfa = \frac{D}{dt} \dot q$ measures how much the velocity fails to stay constant along $q$. Can we ask the same of any vector field $V$ along $q$? That needs a derivative of $V$ that makes sense on a curved manifold, and the energy suggests a natural one. A variation $\delta q$ is itself a vector field along $q$, and $\delta E_q [ \delta q ]$ must depend on how $\delta q$ changes along the curve. So we ask which derivative of $\delta q$ it depends on.
+
+### Which derivative of $\delta q$ does $E$ see?
+
+We compute $\delta E_q$ directly from $L\left(q, \dot q\right) = g_{ij} \dot q^i \dot q^j$, this time without integrating by parts. Since $\frac{d q_s^l}{ds} = \delta q^l$ and $\frac{d \dot q_s^i}{ds} = \delta \dot q^i$, the product and chain rules give
+
+$$
+\frac{d}{ds} \left( g_{ik}\left(q_s\right) \dot q_s^i \dot q_s^k \right) \Big|_{s = 0} = \frac{\partial g_{ik}}{\partial q^l} \dot q^i \dot q^k \delta q^l + g_{ik}\, \delta \dot q^i \dot q^k + g_{ik}\, \dot q^i \delta \dot q^k .
+$$
+
+The metric is symmetric, so the last two terms are equal and combine into $2 g_{ij}\, \dot q^i \delta \dot q^j$. Integrating over $t$,
+
+$$
+\delta E_q [ \delta q ] = \int_{t_0}^{t_1} \left( \frac{\partial g_{ik}}{\partial q^l} \dot q^i \dot q^k \delta q^l + 2 g_{ij} \dot q^i \delta \dot q^j \right) dt .
+$$
+
+The ordinary derivative $\delta \dot q$ only appears in the second term. To see what is going on, we want both terms in the form $2 g_{ij} \dot q^i \left( \cdots \right)$. The Christoffel symbols let us do this. Lowering an index in their definition gives
+
+$$
+g_{ij} \Gamma^j_{kl} = \frac{1}{2} \left( \frac{\partial g_{ik}}{\partial q^l} + \frac{\partial g_{il}}{\partial q^k} - \frac{\partial g_{kl}}{\partial q^i} \right) .
+$$
+
+Contract this with $\dot q^i \dot q^k \delta q^l$. The last two terms on the right cancel after relabeling $i \leftrightarrow k$, which leaves
+
+$$
+2 g_{ij} \Gamma^j_{kl} \dot q^i \dot q^k \delta q^l = \frac{\partial g_{ik}}{\partial q^l} \dot q^i \dot q^k \delta q^l .
+$$
+
+The right-hand side is exactly the first term of $\delta E_q$. Replacing it and factoring out $2 g_{ij} \dot q^i$, we get
+
+$$
+\delta E_q [ \delta q ] = 2 \int_{t_0}^{t_1} g_{ij}\, \dot q^i \left( \delta \dot q^j + \Gamma^j_{kl}\, \dot q^k \delta q^l \right) dt . \tag{7}
+$$
+
+So the energy does not see the ordinary derivative $\delta \dot q$ on its own. It only sees the combination in the bracket. That combination is the derivative we were looking for. Next, we give it a name and apply it to any vector field.
+
+### The covariant derivative of any vector field
+
+We now turn the bracket in $\left(7\right)$ into a derivative of any vector field. The bracket is a formula in the components of $\delta q$ and $\delta \dot q$, and nothing in it requires $\delta q$ to be a variation. So for any vector field $V^k\left(t\right)$ along $q$, we define the **covariant derivative** of $V$ along $q$:
+
+$$
+\frac{D V^k}{dt} := \dot V^k + \Gamma^k_{ij}\, \dot q^i V^j .
+$$
+
+In this notation, $\left(7\right)$ reads
+
+$$
+\delta E_q [ \delta q ] = 2 \int_{t_0}^{t_1} g \left( \dot q, \frac{D \delta q}{dt} \right) dt .
+$$
+
+Plugging in $V = \dot q$ gives $\frac{D \dot q^k}{dt} = \ddot q^k + \Gamma^k_{ij} \dot q^i \dot q^j = a^k$, the covariant acceleration from before. So the geodesic equation says $\frac{D \dot q}{dt} = 0$: the velocity does not change as we move along $q$. For a general vector field, $\frac{D V}{dt} = 0$ means that $V$ stays constant along $q$, in the sense of being [parallel](https://en.wikipedia.org/wiki/Parallel_transport).
+
+In short, $\frac{D V}{dt}$ measures the failure of $V$ to stay constant along $q$, exactly as $\bfa$ measures the failure of $\dot q$ to do so. A geodesic is a curve whose own velocity never fails.
