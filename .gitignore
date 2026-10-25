@@ -16,3 +16,5 @@ package-lock.json
 # local dev
 .bundle/
 .DS_Store
+
+.obsidian/
