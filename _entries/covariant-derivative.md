@@ -3,78 +3,68 @@ title: "The Covariant Derivative: How Far is a Curve from Being a Geodesic?"
 date: 2026-10-24
 tags: [riemannian-geometry, geodesics, covariant-derivative]
 ---
-
-I recently discovered a really fun intuition about the [covariant derivative](https://en.wikipedia.org/wiki/Covariant_derivative). A [geodesic](https://en.wikipedia.org/wiki/Geodesic) is a curve that locally minimizes length, or more conveniently, energy. The covariant derivative of a curve's time derivative can be thought of as its failure to be a geodesic. I found this to be really neat and wanted to share it with you! :) 
+A [geodesic](https://en.wikipedia.org/wiki/Geodesic) is a curve that locally minimizes length, or more conveniently, energy. The [covariant derivative](https://en.wikipedia.org/wiki/Covariant_derivative) of a curve's time derivative can be thought of as its failure to be a geodesic. I found this to be really neat and wanted to share it.
 
 ## Setup
 
-First, notation: the manifold, the metric and its inverse, and the summation convention.
-
-Let $\left(\calM,g\right)$ be an $n$-dimensional [Riemannian manifold](https://en.wikipedia.org/wiki/Riemannian_manifold). For $q \in \calM$, we write the coordinates of $q$ with respect to some coordinate chart as $q \equiv \left(q^1, \dots, q^n\right)$.
-
-- $g_{ij}$ are the components of the [metric](https://en.wikipedia.org/wiki/Metric_tensor). They are symmetric and positive definite.
-- $g^{ij}$ are the components of the inverse matrix, so $g^{ij} g_{jk} = \delta^i_k$, where $\delta^i_k$ is the Kronecker delta.
-- Repeated indices are summed from $1$ to $n$.
+Let $\left(\calM,g\right)$ be an $n$-dimensional [Riemannian manifold](https://en.wikipedia.org/wiki/Riemannian_manifold). For $q \in \calM$, we write the coordinates of $q$ with respect to some coordinate chart $(U,\bfx)$ as $\bfx(q) := \left(q^1, \dots, q^n\right)$, where $q^i = x^i(q)$. I will also write $q \cong (q^1,\ldots,q^n)$. The components of the metric with respect to this chart will be written as $g \cong (g_{ij})$ with $(g^{ij})$ as its inverse. 
 
 ## The geodesic equation
 
 Recall that geodesics are curves that extremize the length functional on a Riemannian manifold:
-
 $$
 \Lambda[q] := \int_{t_0}^{t_1} \sqrt{g_{ij}\, \dot q^i \dot q^j} \, dt .
 $$
 
-They also extremize the energy functional
+It is more convenient to work with energy functional, since geodesics are also the extremeal curves of that functional:
 
 $$
-E[q] := \int_{t_0}^{t_1} L\left(q, \dot q\right) \, dt, \quad L\left(q, \dot q\right) := g_{ij}\, \dot q^i \dot q^j .
+E[q] := \int_{t_0}^{t_1} L\left(q, \dot q\right) \, dt, \quad L\left(q, \dot q\right) := \frac{1}{2} g_{ij}\, \dot q^i \dot q^j .
 $$
 
-Here we only look at a small piece of the curve $q$ between $t_0$ and $t_1$, since extremizing length is a local property.
-
-Recall extremal curves of $E$ necessarily satisfies the **[Euler–Lagrange equations](https://en.wikipedia.org/wiki/Euler%E2%80%93Lagrange_equation)**
+It is a well known fact that all extremal curves of $E$ necessarily satisfies the **[Euler–Lagrange equations](https://en.wikipedia.org/wiki/Euler%E2%80%93Lagrange_equation)**
 
 $$
 \frac{d}{dt} \frac{\partial L}{\partial \dot q^i} - \frac{\partial L}{\partial q^i} = 0 . \tag{1}
 $$
 
-Since $L$ is quadratic, the two partial derivatives in (1) are nicely computed as
+Since $L$ is quadratic, the two partial derivatives in (1) become
 
 $$
-\frac{\partial L}{\partial \dot q^i} = 2 g_{ij} \dot q^j, \quad \frac{\partial L}{\partial q^i} = \frac{\partial g_{jk}}{\partial q^i} \dot q^j \dot q^k . \tag{2}
+\frac{\partial L}{\partial \dot q^i} = g_{ij} \dot q^j, \quad \frac{\partial L}{\partial q^i} = \frac{1}{2} \frac{\partial g_{jk}}{\partial q^i} \dot q^j \dot q^k . \tag{2}
 $$
 
-Using the simply product rule, the time derivative of $\frac{\partial L}{\partial \dot q^i}$ is 
+Using the product rule, the time derivative of $\frac{\partial L}{\partial \dot q^i}$ is 
 
 $$
-\frac{d}{dt} \frac{\partial L}{\partial \dot q^i} = 2 g_{ij} \ddot q^j + 2 \frac{\partial g_{ij}}{\partial q^k} \dot q^k \dot q^j .
+\frac{d}{dt} \frac{\partial L}{\partial \dot q^i} = g_{ij} \ddot q^j + \frac{\partial g_{ij}}{\partial q^k} \dot q^k \dot q^j .
 $$
 
 The last term is contracted with the symmetric product $\dot q^j \dot q^k$, so only its symmetric part in $j, k$ survives:
 
 $$
-2 \frac{\partial g_{ij}}{\partial q^k} \dot q^k \dot q^j = \left( \frac{\partial g_{ij}}{\partial q^k} + \frac{\partial g_{ik}}{\partial q^j} \right) \dot q^j \dot q^k .
+\frac{\partial g_{ij}}{\partial q^k} \dot q^k \dot q^j = \frac{1}{2} \left( \frac{\partial g_{ij}}{\partial q^k} + \frac{\partial g_{ik}}{\partial q^j} \right) \dot q^j \dot q^k .
 $$
 
 Substituting this and $\left(2\right)$ into the left-hand side of $\left(1\right)$ gives
 
 $$
-\frac{d}{dt} \frac{\partial L}{\partial \dot q^i} - \frac{\partial L}{\partial q^i} = 2 g_{ij} \ddot q^j + \left( \frac{\partial g_{ij}}{\partial q^k} + \frac{\partial g_{ik}}{\partial q^j} - \frac{\partial g_{jk}}{\partial q^i} \right) \dot q^j \dot q^k . \tag{3}
+\frac{d}{dt} \frac{\partial L}{\partial \dot q^i} - \frac{\partial L}{\partial q^i} = g_{ij} \ddot q^j + \frac{1}{2} \left( \frac{\partial g_{ij}}{\partial q^k} + \frac{\partial g_{ik}}{\partial q^j} - \frac{\partial g_{jk}}{\partial q^i} \right) \dot q^j \dot q^k . \tag{3}
 $$
 
-To clean this up, define the **[Christoffel symbols](https://en.wikipedia.org/wiki/Christoffel_symbols)**
+The coefficient of $\dot q^j \dot q^k$ in $\left(3\right)$ involve the **[Christoffel symbols](https://en.wikipedia.org/wiki/Christoffel_symbols)**
 
 $$
 \Gamma^l_{jk} := \frac{1}{2} g^{li} \left( \frac{\partial g_{ij}}{\partial q^k} + \frac{\partial g_{ik}}{\partial q^j} - \frac{\partial g_{jk}}{\partial q^i} \right) . \tag{4}
 $$
 
-They are symmetric in $j$ and $k$. Since $g_{il} g^{lm} = \delta_i^m$, the coefficient of $\dot q^j \dot q^k$ in $\left(3\right)$ is exactly $2 g_{il} \Gamma^l_{jk}$ by $\left(4\right)$. Hence
+Since the coefficient of $\dot q^j \dot q^k$ in $\left(3\right)$ is exactly $g_{il} \Gamma^l_{jk}$ from $\left(4\right)$, we can write
 
 $$
-\frac{d}{dt} \frac{\partial L}{\partial \dot q^i} - \frac{\partial L}{\partial q^i} = 2 g_{il} \left( \ddot q^l + \Gamma^l_{jk} \dot q^j \dot q^k \right) .
+\frac{d}{dt} \frac{\partial L}{\partial \dot q^i} - \frac{\partial L}{\partial q^i} = g_{il} \left( \ddot q^l + \Gamma^l_{jk} \dot q^j \dot q^k \right) .
 $$
 
-Setting the left-hand side of $\left(1\right)$ to zero and multiplying by $\frac{1}{2} g^{ki}$ yields the **geodesic equation**
+Setting the left-hand side of $\left(1\right)$ to zero and multiplying by $g^{ki}$ yields the **geodesic equation**
 
 $$
 \ddot q^k + \Gamma^k_{ij}\left(q\right)\, \dot q^i \dot q^j = 0 .
@@ -90,13 +80,11 @@ with these initial conditions.
 
 ## Covariant acceleration of an arbitrary curve
 
-Plugging an arbitrary curve into the left-hand side of the geodesic equation gives a vector $\bfa \in T_{q\left(t\right)} \calM$ with components
+Instead of a geodesic, we can plug an arbitrary curve into the left-hand side of the geodesic equation. This gives us a vector $\bfa \in T_{q\left(t\right)} \calM$ which we will call the covariant acceleration; its components are
 
 $$
 a^k := \ddot q^k + \Gamma^k_{ij}\left(q\right)\, \dot q^i \dot q^j .
 $$
-
-We can call it the **covariant acceleration**. 
 
 ### What does $\bfa$ measure?
 
@@ -150,16 +138,16 @@ $$
 
 Now suppose $\delta E_q [ \delta q ] = 0$ for every variation $\delta q$. By the [fundamental lemma of the calculus of variations](https://en.wikipedia.org/wiki/Fundamental_lemma_of_the_calculus_of_variations), the bracket in $\left(6\right)$ must vanish identically. These are exactly the Euler–Lagrange equations $\left(1\right)$.
 
-Earlier, we showed that the bracket in $\left(6\right)$ equals $2 g_{ik} \left( \ddot q^k + \Gamma^k_{ij} \dot q^i \dot q^j \right)$, which is $2 g_{ik} a^k$:
+Earlier, we showed that the bracket in $\left(6\right)$ equals $g_{ik} \left( \ddot q^k + \Gamma^k_{ij} \dot q^i \dot q^j \right)$, which is $g_{ik} a^k$:
 
 $$
-\frac{d}{dt} \frac{\partial L}{\partial \dot q^i} - \frac{\partial L}{\partial q^i} = 2 g_{ik}\, a^k .
+\frac{d}{dt} \frac{\partial L}{\partial \dot q^i} - \frac{\partial L}{\partial q^i} = g_{ik}\, a^k .
 $$
 
 Substituting into $\left(6\right)$,
 
 $$
-\delta E_q [ \delta q ] = - 2 \int_{t_0}^{t_1} g_{ik}\, a^k \delta q^i \, dt = -2 \int_{t_0}^{t_1} g(\bfa, \delta \bfq) \ dt .
+\delta E_q [ \delta q ] = - \int_{t_0}^{t_1} g_{ik}\, a^k \delta q^i \, dt = - \int_{t_0}^{t_1} g(\bfa, \delta \bfq) \ dt .
 $$
 
-The integrand is the Riemannian metric applied to $-2 \bfa$ and $\delta q$. In particular, $\delta E_q [ \delta q ] = 0$ for every $\delta q$ exactly when $\bfa = 0$. More than that, $-2 \bfa$ is the gradient of $E$ at $q$, so $\bfa$ points in the direction of steepest energy descent, and its size measures how far $q$ is from being a critical point of $E$. This gives $\bfa$ a variational meaning. 
+The integrand is the Riemannian metric applied to $-\bfa$ and $\delta q$. In particular, $\delta E_q [ \delta q ] = 0$ for every $\delta q$ exactly when $\bfa = 0$. More than that, $-\bfa$ is the gradient of $E$ at $q$, so $\bfa$ points in the direction of steepest energy descent, and its size measures how far $q$ is from being a critical point of $E$. This gives $\bfa$ a variational meaning. 

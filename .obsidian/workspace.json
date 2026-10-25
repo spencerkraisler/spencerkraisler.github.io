@@ -13,13 +13,13 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "_entries/covariant-derivative.md",
+                "file": "_entries/special-relativity-part-1.md",
                 "mode": "source",
                 "source": false,
                 "backlinks": false
               },
               "icon": "lucide-file",
-              "title": "covariant-derivative"
+              "title": "special-relativity-part-1"
             }
           }
         ]
@@ -132,7 +132,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "_entries/covariant-derivative.md",
+                "file": "_entries/special-relativity-part-1.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
@@ -160,20 +160,20 @@
   },
   "active": "fbceeb3269ddb906",
   "lastOpenFiles": [
+    "_entries/special-relativity-applet.md",
+    "_entries/euler-poincare-equation.md",
+    "_entries/special-relativity-part-1.md",
+    "_site/special-relativity-part-1/index.html",
+    "_site/special-relativity-part-1",
+    "_site/Special-Relativity-Part-1/index.html",
+    "_site/Special-Relativity-Part-1",
+    "_site/covariant-derivative-1/index.html",
+    "_site/covariant-derivative-1",
+    "_entries/covariant-derivative.md",
     "_site/special-relativity-applet/index.html",
     "_site/special-relativity-applet",
-    "_entries/special-relativity-applet.md",
     "_site/assets/applets/relativistic-rocket.html",
     "assets/applets/relativistic-rocket.html",
-    "_site/assets/applets/reaction-wheel.html",
-    "_site/assets/applets",
-    "assets/applets/reaction-wheel.html",
-    "assets/applets",
-    "_site/euler-poincare-equation/index.html",
-    "_site/euler-poincare-equation",
-    "_site/euler-poincare-equation.md",
-    "_entries/euler-poincare-equation.md",
-    "Untitled.base",
-    "_entries/covariant-derivative.md"
+    "_site/euler-poincare-equation.md"
   ]
 }
