@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Relativistic driving</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Semi+Condensed:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+--paper:#F4F6F1;--panel:#E5EADF;--ink:#1D2433;--ink2:#4F5869;--ink3:#737B8A;
+--line:rgba(29,36,51,.12);--line2:rgba(29,36,51,.28);
+--map:#EEF1E6;--grid:rgba(29,36,51,.17);--face:rgba(29,36,51,.55);--hand:#1D2433;
+--sel:#1D2433;--onsel:#F4F6F1;--tread:rgba(0,0,0,.07);
+--gas-bg:#DDEDC6;--gas:#27500A;--gas-b:#97C459;
+--brk-bg:#F8D9D9;--brk:#791F1F;--brk-b:#E89A9A;
+--focus:#185FA5;--flash:#BA7517;--door:#E24B4A;--wall:#5F5E5A;
+color-scheme:light;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+--paper:#151A14;--panel:#222A20;--ink:#E9EDE4;--ink2:#AEB6A8;--ink3:#868E81;
+--line:rgba(233,237,228,.12);--line2:rgba(233,237,228,.28);
+--map:#1A2118;--grid:rgba(233,237,228,.15);--face:rgba(233,237,228,.55);--hand:#E9EDE4;
+--sel:#E9EDE4;--onsel:#151A14;--tread:rgba(255,255,255,.06);
+--gas-bg:#20380B;--gas:#C0DD97;--gas-b:#3B6D11;
+--brk-bg:#4A1616;--brk:#F7C1C1;--brk-b:#A32D2D;
+--focus:#85B7EB;--flash:#FAC775;--door:#F09595;--wall:#B4B2A9;color-scheme:dark}}
+:root[data-theme="dark"]{
+--paper:#151A14;--panel:#222A20;--ink:#E9EDE4;--ink2:#AEB6A8;--ink3:#868E81;
+--line:rgba(233,237,228,.12);--line2:rgba(233,237,228,.28);
+--map:#1A2118;--grid:rgba(233,237,228,.15);--face:rgba(233,237,228,.55);--hand:#E9EDE4;
+--sel:#E9EDE4;--onsel:#151A14;--tread:rgba(255,255,255,.06);
+--gas-bg:#20380B;--gas:#C0DD97;--gas-b:#3B6D11;
+--brk-bg:#4A1616;--brk:#F7C1C1;--brk-b:#A32D2D;
+--focus:#85B7EB;--flash:#FAC775;--door:#F09595;--wall:#B4B2A9;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Barlow",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:16px;line-height:1.45;-webkit-tap-highlight-color:transparent}
+.app{max-width:560px;margin:0 auto;padding:12px 14px 20px}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+#cv{display:block;width:100%;height:min(54vh,500px);min-height:260px;border-radius:16px;background:var(--map);border:1px solid var(--line);touch-action:none}
+.cluster{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:10px 0 12px}
+.g{background:var(--panel);border-radius:10px;padding:6px 10px;min-width:0}
+.g span{display:block;font-size:12px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.g b{display:block;font-family:"Barlow Semi Condensed","Barlow",sans-serif;font-weight:600;font-size:19px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.drive{display:flex;gap:10px;align-items:stretch}
+#wheel{flex:none;width:132px;height:132px;touch-action:none;cursor:grab;border-radius:50%}
+.pd{flex:1;min-width:0;border-radius:14px;border:1.5px solid;font:600 18px "Barlow Semi Condensed","Barlow",sans-serif;display:flex;align-items:flex-end;justify-content:center;padding-bottom:14px;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;cursor:pointer;background-image:repeating-linear-gradient(to bottom,transparent 0 11px,var(--tread) 11px 14px);transition:transform .06s}
+#brk{background-color:var(--brk-bg);color:var(--brk);border-color:var(--brk-b)}
+#gas{background-color:var(--gas-bg);color:var(--gas);border-color:var(--gas-b)}
+.pd.on{transform:scale(.96);border-width:3px}
+.row{display:flex;gap:8px;align-items:center;margin-top:12px}
+.seg{flex:1;display:flex;background:var(--panel);border-radius:12px;padding:3px}
+.seg button{flex:1;min-height:42px;border:0;border-radius:9px;background:transparent;color:var(--ink2);font:500 15px "Barlow",sans-serif;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--sel);color:var(--onsel)}
+.ib{flex:none;width:48px;height:48px;border-radius:12px;border:1px solid var(--line2);background:transparent;color:var(--ink);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.chips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}
+#hub{cursor:pointer;transform-box:fill-box;transform-origin:center;transition:transform .15s}
+#hub.pop{transform:scale(1.18)}
+.chip{flex:1;min-height:46px;border-radius:12px;border:1px solid var(--line2);background:transparent;color:var(--ink);font:500 15px "Barlow",sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 6px}
+.chip[aria-pressed="true"]{background:var(--sel);color:var(--onsel);border-color:var(--sel)}
+.dot{flex:none;width:9px;height:9px;border-radius:50%;border:1.5px solid currentColor}
+.chip[aria-pressed="true"] .dot{background:currentColor}
+.hint{font-size:13px;color:var(--ink3);margin:12px 2px 0}
+button:focus-visible,#wheel:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+</style>
+</head>
+<body>
+<main class="app">
+<h1 class="sr-only">Relativistic driving</h1>
+<canvas id="cv" aria-label="Top-down view of a car driving through a village at relativistic speed"></canvas>
+<div class="cluster" aria-live="off">
+<div class="g"><span>Speed</span><b id="mS">0.000c</b></div>
+<div class="g"><span>γ</span><b id="mG">1.00</b></div>
+<div class="g"><span>Ground clock</span><b id="mT">0.0 s</b></div>
+<div class="g"><span>His clock</span><b id="mTau">0.0 s</b></div>
+</div>
+<div class="drive">
+<svg id="wheel" viewBox="0 0 132 132" role="slider" tabindex="0" aria-label="Steering heading in degrees" aria-valuemin="0" aria-valuemax="359" aria-valuenow="30">
+<circle cx="66" cy="66" r="64" fill="var(--panel)"/>
+<g id="wg" transform="rotate(-30 66 66)">
+<circle cx="66" cy="66" r="50" fill="none" stroke="var(--ink)" stroke-width="10"/>
+<path d="M66 66V16M66 66H16M66 66V116" stroke="var(--ink)" stroke-width="7" stroke-linecap="round" fill="none"/>
+<circle cx="66" cy="66" r="14" fill="var(--ink)"/>
+<rect x="108" y="58" width="16" height="16" rx="4" fill="#EF9F27"/>
+</g>
+<g id="hub"><circle cx="66" cy="66" r="22" fill="#EF9F27"/><path d="M66 56v-4M66 80v-4M56 66h-4M80 66h-4M59 59l-3-3M73 73l3 3M73 59l3-3M59 73l-3 3" stroke="#412402" stroke-width="2" stroke-linecap="round"/><circle cx="66" cy="66" r="5" fill="#412402"/></g>
+</svg>
+<button id="brk" class="pd" aria-label="Brake, hold to slow down">Brake</button>
+<button id="gas" class="pd" aria-label="Gas, hold to speed up">Gas</button>
+</div>
+<div class="row">
+<div class="seg" role="group" aria-label="Whose view">
+<button id="vG" aria-pressed="true">Ground</button>
+<button id="vH" aria-pressed="false">His view</button>
+</div>
+<button id="bp" class="ib" aria-label="Pause"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path id="bpi" d="M8 5v14M16 5v14"/></svg></button>
+<button id="br" class="ib" aria-label="Reset"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v5h5"/></svg></button>
+</div>
+<div class="chips">
+<button class="chip" id="cC" aria-pressed="false"><span class="dot"></span>Clocks</button>
+<button class="chip" id="cL" aria-pressed="false"><span class="dot"></span>Light delay</button>
+<button class="chip" id="cY" aria-pressed="false"><span class="dot"></span>Gyroscope</button>
+<button class="chip" id="cB" aria-pressed="false"><span class="dot"></span>Barn paradox</button>
+</div>
+<button id="fl" class="sr-only">Flash light</button>
+<p class="hint">Drag the wheel to steer. Tap its center to flash a light. Hold Gas or Brake; let go and he coasts. On a keyboard, use the arrow keys and F.</p>
+</main>
+<script>
+(()=>{
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+const S={phi:0,th:Math.PI/6,tgt:Math.PI/6,psi:0,t:0,tau:0,P:{x:0.5,y:0.5},view:'ground',clocks:false,light:false,gyro:false,run:true,gas:false,brk:false,barn:false,flashes:[],ev:null};
+const T=4,SIM=1.5,ACC=0.6,PHMAX=3,TS=16,R0=0.3;
+let W=0,H=0,s=40,dpr=1,Dv=6;
+function size(){dpr=window.devicePixelRatio||1;W=cv.clientWidth;H=cv.clientHeight;cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);s=W/9;Dv=Math.hypot(W,H)/2/s;}
+new ResizeObserver(size).observe(cv);size();
+
+function L(x,y,n,g){if(g===1)return[x,y];const k=(1-1/g)*(x*n.x+y*n.y);return[x-k*n.x,y-k*n.y];}
+function retard(x,y,ux,uy){const u2=ux*ux+uy*uy,xu=x*ux+y*uy,x2=x*x+y*y;const te=(xu-Math.sqrt(Math.max(0,xu*xu+(1-u2)*x2)))/(1-u2);return[x+ux*te,y+uy*te,te];}
+const ang=a=>Math.atan2(Math.sin(a),Math.cos(a));
+
+function rng(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+const R=rng(20261020),OBJ=[];
+const wd=d=>d-TS*Math.round(d/TS);
+function spot(r){for(let k=0;k<80;k++){const x=R()*TS,y=R()*TS;if(Math.hypot(wd(x),wd(y))<1.8+r)continue;if(OBJ.every(o=>Math.hypot(wd(o.x-x),wd(o.y-y))>o.r+r+0.3))return[x,y];}return null;}
+function circ(r,k,f){const p=[];for(let i=0;i<k;i++){const a=2*Math.PI*i/k,m=f?f(a,i):1;p.push([r*m*Math.cos(a),r*m*Math.sin(a)]);}return p;}
+function sq(h,rot){const c=Math.cos(rot),sn=Math.sin(rot),pts=[],K=[[-h,-h],[h,-h],[h,h],[-h,h]];for(let i=0;i<4;i++){const a=K[i],b=K[(i+1)%4];for(let m=0;m<3;m++){const x=a[0]+(b[0]-a[0])*m/3,y=a[1]+(b[1]-a[1])*m/3;pts.push([x*c-y*sn,x*sn+y*c]);}}return pts;}
+const C={pond:'#85B7EB',wall:'#B4B2A9',roof:'#993C1D',leaf:'#639922',trunk:'#3B6D11',home:'#7F77DD',homeIn:'#EEEDFE'};
+const ORDER=['pond','wall','roof','leaf','trunk','home','homeIn'];
+for(let i=0;i<3;i++){const r=1+R()*0.5,p=spot(r);if(!p)continue;const ph=R()*6;OBJ.push({x:p[0],y:p[1],r,polys:[['pond',circ(r,18,a=>0.82+0.18*Math.sin(3*a+ph))]]});}
+for(let i=0;i<12;i++){const h=0.3+R()*0.14,r=h*1.42,p=spot(r);if(!p)continue;const rot=R()<0.5?0:R()*Math.PI;OBJ.push({x:p[0],y:p[1],r,polys:[['wall',sq(h,rot)],['roof',sq(h*0.55,rot)]]});}
+for(let i=0;i<34;i++){const r=0.2+R()*0.17,p=spot(r);if(!p)continue;OBJ.push({x:p[0],y:p[1],r,polys:[['leaf',circ(r,10)],['trunk',circ(r*0.35,6)]]});}
+const HOME={r:0.7,polys:[['home',circ(0.66,16,(a,i)=>i%2?0.5:1)],['homeIn',circ(0.2,10)]]};
+const BX0=4,BLEN=2.2,BX1=BX0+BLEN,BHW=0.5,BAR_SIM=0.8;
+
+const F={};
+function setF(g,b,n){const his=S.view==='his';F.his=his;F.g=his?g:1;F.n=n;F.Ox=S.P.x;F.Oy=S.P.y;F.light=S.light;F.ux=his?-b*n.x:0;F.uy=his?-b*n.y:0;F.rot=his&&S.gyro;F.c=Math.cos(S.psi);F.sn=Math.sin(S.psi);F.Rr=(S.light&&his?(1+b)*Dv:Dv)+1.5;}
+function toScreen(x,y){if(F.rot){const a=x*F.c+y*F.sn;y=-x*F.sn+y*F.c;x=a;}return[W/2+s*x,H/2-s*y];}
+function proj(x,y){let q=L(x-F.Ox,y-F.Oy,F.n,F.g),te=0;if(F.light){q=retard(q[0],q[1],F.ux,F.uy);te=q[2];}const p=toScreen(q[0],q[1]);p[2]=te;return p;}
+const off=(p,m)=>p[0]<-m||p[0]>W+m||p[1]<-m||p[1]>H+m;
+
+let col={},colT=-1e9;
+function readColors(now){if(now-colT<500)return;colT=now;const cs=getComputedStyle(document.documentElement);['grid','face','hand','map','flash','door','wall'].forEach(k=>col[k]=cs.getPropertyValue('--'+k).trim());}
+
+function drawScenery(){
+const paths={};ORDER.forEach(k=>paths[k]=new Path2D());
+const span=F.Rr*F.g+2;
+const i0=Math.floor((F.Ox-span)/TS),i1=Math.floor((F.Ox+span)/TS),j0=Math.floor((F.Oy-span)/TS),j1=Math.floor((F.Oy+span)/TS);
+const add=(o,cx,cy)=>{const c=L(cx-F.Ox,cy-F.Oy,F.n,F.g),lim=F.Rr+o.r;if(c[0]*c[0]+c[1]*c[1]>lim*lim)return;const pc=proj(cx,cy);if(off(pc,s*(o.r*3+1)))return;
+for(const [k,pts] of o.polys){const P2=paths[k];pts.forEach((v,i)=>{const p=proj(cx+v[0],cy+v[1]);i?P2.lineTo(p[0],p[1]):P2.moveTo(p[0],p[1]);});P2.closePath();}};
+for(let i=i0;i<=i1;i++)for(let j=j0;j<=j1;j++)for(const o of OBJ)add(o,o.x+i*TS,o.y+j*TS);
+add(HOME,0,0);
+ORDER.forEach(k=>{ctx.fillStyle=C[k];ctx.fill(paths[k]);});
+}
+
+function drawLines(){
+const curved=F.light&&F.his,N=curved?40:2,Rr2=F.Rr*F.Rr,span=F.Rr*F.g+1,path=new Path2D();
+for(let fam=0;fam<2;fam++){
+const B=fam?L(1,0,F.n,F.g):L(0,1,F.n,F.g),bb=B[0]*B[0]+B[1]*B[1],oc=fam?F.Oy:F.Ox;
+for(let k=Math.floor(oc-span);k<=Math.ceil(oc+span);k++){
+const A=fam?L(0,k-F.Oy,F.n,F.g):L(k-F.Ox,0,F.n,F.g);
+const ab=A[0]*B[0]+A[1]*B[1],aa=A[0]*A[0]+A[1]*A[1],disc=ab*ab-bb*(aa-Rr2);
+if(disc<=0)continue;const q=Math.sqrt(disc),p0=(-ab-q)/bb,p1=(-ab+q)/bb;
+for(let m=0;m<N;m++){const p=p0+(p1-p0)*m/(N-1);let x=A[0]+B[0]*p,y=A[1]+B[1]*p;if(curved){const r=retard(x,y,F.ux,F.uy);x=r[0];y=r[1];}const sc=toScreen(x,y);m?path.lineTo(sc[0],sc[1]):path.moveTo(sc[0],sc[1]);}
+}}
+ctx.lineWidth=1;ctx.strokeStyle=col.grid;ctx.stroke(path);
+}
+
+function groundTime(x,y,c,g,b,n){let r=F.his?S.t+b*((x-S.P.x)*n.x+(y-S.P.y)*n.y):S.t;if(F.light)r+=c[2]*(F.his?1/g:1);return r;}
+function drawClocks(g,b,n){
+const faces=new Path2D(),hands=new Path2D();
+const B=L(0,1,F.n,F.g),bb=B[0]*B[0]+B[1]*B[1],span=F.Rr*F.g+1,Rr2=F.Rr*F.Rr,kf=F.his?1/g:1;
+for(let i=Math.floor(F.Ox-span);i<=Math.ceil(F.Ox+span);i++){
+const A=L(i-F.Ox,0,F.n,F.g),ab=A[0]*B[0]+A[1]*B[1],aa=A[0]*A[0]+A[1]*A[1],disc=ab*ab-bb*(aa-Rr2);
+if(disc<=0)continue;const q=Math.sqrt(disc);
+const j0=Math.ceil(F.Oy+(-ab-q)/bb),j1=Math.floor(F.Oy+(-ab+q)/bb);
+for(let j=j0;j<=j1;j++){
+const c=proj(i,j);if(off(c,s*0.6))continue;
+const rd=groundTime(i,j,c,g,b,n);
+const a=2*Math.PI*rd/T;
+for(let m=0;m<8;m++){const t2=m*Math.PI/4,p=proj(i+R0*Math.cos(t2),j+R0*Math.sin(t2));m?faces.lineTo(p[0],p[1]):faces.moveTo(p[0],p[1]);}
+faces.closePath();
+const h=proj(i+0.8*R0*Math.sin(a),j+0.8*R0*Math.cos(a));hands.moveTo(c[0],c[1]);hands.lineTo(h[0],h[1]);
+}}
+ctx.fillStyle=col.map;ctx.fill(faces);
+ctx.lineWidth=1;ctx.strokeStyle=col.face;ctx.stroke(faces);
+ctx.lineWidth=1.6;ctx.strokeStyle=col.hand;ctx.stroke(hands);
+}
+
+const rect=(x0,y0,x1,y1)=>[[x0,y0],[x1,y0],[x1,y1],[x0,y1]];
+const TYRE='#2C2C2A',BODY='#EF9F27',GLASS='#412402',LAMP='#FAEEDA';
+const CAR=[[TYRE,rect(-0.38,-0.31,-0.18,-0.19)],[TYRE,rect(-0.38,0.19,-0.18,0.31)],[TYRE,rect(0.18,-0.31,0.38,-0.19)],[TYRE,rect(0.18,0.19,0.38,0.31)],
+[BODY,[[-0.45,-0.13],[-0.4,-0.22],[0.38,-0.22],[0.45,-0.12],[0.45,0.12],[0.38,0.22],[-0.4,0.22],[-0.45,0.13]]],
+[GLASS,rect(0.1,-0.17,0.23,0.17)],[GLASS,rect(-0.38,-0.14,-0.3,0.14)],
+[LAMP,rect(0.41,-0.19,0.45,-0.1)],[LAMP,rect(0.41,0.1,0.45,0.19)]];
+const BUS=[[TYRE,rect(-1.2,-0.33,-0.95,-0.22)],[TYRE,rect(-1.2,0.22,-0.95,0.33)],[TYRE,rect(-0.75,-0.33,-0.5,-0.22)],[TYRE,rect(-0.75,0.22,-0.5,0.33)],[TYRE,rect(0.9,-0.33,1.15,-0.22)],[TYRE,rect(0.9,0.22,1.15,0.33)],
+[BODY,[[-1.5,-0.18],[-1.45,-0.25],[1.42,-0.25],[1.5,-0.16],[1.5,0.16],[1.42,0.25],[-1.45,0.25],[-1.5,0.18]]],
+[GLASS,rect(1.22,-0.2,1.36,0.2)],[GLASS,rect(-1.44,-0.17,-1.36,0.17)],
+[LAMP,rect(1.46,-0.22,1.5,-0.13)],[LAMP,rect(1.46,0.13,1.5,0.22)]];
+const HALF=()=>S.barn?1.5:0.45;
+function drawCar(g,b,n){
+const ct=Math.cos(S.th),st=Math.sin(S.th);
+const W2=(wx,wy)=>{if(F.his)return toScreen(wx,wy);const c=L(wx,wy,n,g);let x=c[0],y=c[1];if(S.light){const r=retard(x,y,b*n.x,b*n.y);x=r[0];y=r[1];}return toScreen(x,y);};
+const shape=(pts,local)=>{ctx.beginPath();pts.forEach((v,i)=>{const p=local?W2(v[0]*ct-v[1]*st,v[0]*st+v[1]*ct):W2(v[0],v[1]);i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]);});ctx.closePath();};
+for(const [c,pts] of (S.barn?BUS:CAR)){shape(pts,true);ctx.fillStyle=c;ctx.fill();}
+if(S.clocks){
+const cx=-0.1*ct,cy=-0.1*st;
+shape(circ(0.13,14).map(v=>[cx+v[0],cy+v[1]]),false);ctx.fillStyle=LAMP;ctx.fill();
+const a=2*Math.PI*S.tau/T,p0=W2(cx,cy),p1=W2(cx+0.11*Math.sin(a),cy+0.11*Math.cos(a));
+ctx.beginPath();ctx.moveTo(p0[0],p0[1]);ctx.lineTo(p1[0],p1[1]);ctx.strokeStyle=GLASS;ctx.lineWidth=2;ctx.stroke();
+}
+if(S.gyro){
+const a=Math.PI/2+S.psi,ex=0.36*Math.cos(a),ey=0.36*Math.sin(a);
+const p0=W2(-ex*0.35,-ey*0.35),p1=W2(ex,ey);
+ctx.beginPath();ctx.moveTo(p0[0],p0[1]);ctx.lineTo(p1[0],p1[1]);ctx.strokeStyle='#3C3489';ctx.lineWidth=3.5;ctx.lineCap='round';ctx.stroke();
+ctx.beginPath();ctx.arc(p1[0],p1[1],4,0,2*Math.PI);ctx.fillStyle='#3C3489';ctx.fill();ctx.lineCap='butt';
+}
+}
+
+function drawBarn(g,b,n){
+if(!S.barn)return;
+const poly=(pts,fill)=>{ctx.beginPath();pts.forEach((v,i)=>{const p=proj(v[0],v[1]);i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]);});ctx.closePath();ctx.fillStyle=fill;ctx.fill();};
+const strip=(x0,y0,x1,y1)=>{const pts=[],K=12;for(let k=0;k<=K;k++)pts.push([x0+(x1-x0)*k/K,y0]);for(let k=K;k>=0;k--)pts.push([x0+(x1-x0)*k/K,y1]);return pts;};
+poly(strip(BX0,-BHW,BX1,BHW),'rgba(136,135,128,0.2)');
+poly(strip(BX0-0.06,BHW,BX1+0.06,BHW+0.12),col.wall);
+poly(strip(BX0-0.06,-BHW-0.12,BX1+0.06,-BHW),col.wall);
+for(const dx of [BX0,BX1]){
+const c=proj(dx,0),tg=groundTime(dx,0,c,g,b,n);
+const shut=S.ev&&tg>=S.ev.tin&&tg<=S.ev.tout;
+ctx.beginPath();for(let k=0;k<=8;k++){const p=proj(dx,-BHW+2*BHW*k/8);k?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]);}
+ctx.lineWidth=shut?5:1.5;ctx.strokeStyle=shut?col.door:col.wall;ctx.setLineDash(shut?[]:[4,4]);ctx.stroke();ctx.setLineDash([]);
+}
+}
+function drawFlashes(g,b,n){
+if(!S.flashes.length)return;
+for(const f of S.flashes){
+let cx=f.x-S.P.x,cy=f.y-S.P.y,r=S.t-f.t;
+if(F.his){const dt=f.t-S.t,dp=cx*n.x+cy*n.y,px=cx-dp*n.x,py=cy-dp*n.y,tp=g*(dt-b*dp),xp=g*(dp-b*dt);cx=xp*n.x+px;cy=xp*n.y+py;r=-tp;}
+if(r<=0)continue;
+const p=toScreen(cx,cy);
+ctx.beginPath();ctx.arc(p[0],p[1],r*s,0,2*Math.PI);ctx.lineWidth=2.5;ctx.strokeStyle=col.flash;ctx.stroke();
+ctx.beginPath();ctx.arc(p[0],p[1],3,0,2*Math.PI);ctx.fillStyle=col.flash;ctx.fill();
+}
+}
+function predictBarn(g){
+if(!S.barn){S.ev=null;return;}
+if(S.ev&&S.t>=S.ev.tin){if(S.t>S.ev.tout+20)S.ev=null;return;}
+S.ev=null;const vx=Math.tanh(S.phi)*Math.cos(S.th);
+if(Math.abs(Math.sin(S.th))>0.03||Math.abs(S.P.y)>0.2||Math.abs(vx)<1e-3)return;
+const h=HALF()/g;let tin,tout;
+if(vx>0){tin=S.t+(BX0+h-S.P.x)/vx;tout=S.t+(BX1-h-S.P.x)/vx;}else{tin=S.t+(BX1-h-S.P.x)/vx;tout=S.t+(BX0+h-S.P.x)/vx;}
+if(tin<tout&&tout>S.t)S.ev={tin,tout};
+}
+function render(g,b,n,now){
+readColors(now);
+ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,H);
+setF(g,b,n);
+drawScenery();drawLines();drawBarn(g,b,n);
+if(S.clocks)drawClocks(g,b,n);
+drawCar(g,b,n);drawFlashes(g,b,n);
+}
+
+const mS=document.getElementById('mS'),mG=document.getElementById('mG'),mT=document.getElementById('mT'),mTau=document.getElementById('mTau');
+const wheel=document.getElementById('wheel'),wg=document.getElementById('wg');
+let last=performance.now(),lastUI=-1e9;
+function frame(now){
+const dtS=Math.min(0.05,Math.max(0,(now-last)/1000));last=now;const dtR=S.run?dtS:0;
+let g=Math.cosh(S.phi);
+let dth=0;if(S.run){const d=ang(S.tgt-S.th),mx=3*dtS;dth=Math.max(-mx,Math.min(mx,d*(1-Math.exp(-8*dtS))));}
+S.th+=dth;S.psi-=(g-1)*dth;
+const his=S.view==='his';
+const sim=S.barn?BAR_SIM:SIM,dtau=his?dtR*sim:dtR*sim/g;
+if(S.brk)S.phi=Math.max(0,S.phi-2*ACC*dtau);else if(S.gas)S.phi=Math.min(PHMAX,S.phi+ACC*dtau);
+g=Math.cosh(S.phi);const b=Math.tanh(S.phi);
+const dtl=his?g*dtau:dtR*sim;
+const n={x:Math.cos(S.th),y:Math.sin(S.th)};
+S.P.x+=b*n.x*dtl;S.P.y+=b*n.y*dtl;S.t+=dtl;S.tau+=dtau;
+predictBarn(g);
+if(S.flashes.length&&S.t-S.flashes[0].t>80)S.flashes.shift();
+render(g,b,n,now);
+const deg=((S.tgt*180/Math.PI)%360+360)%360;
+wg.setAttribute('transform','rotate('+(-deg).toFixed(1)+' 66 66)');
+if(now-lastUI>100){lastUI=now;mS.textContent=b.toFixed(3)+'c';mG.textContent=g.toFixed(2);mT.textContent=S.t.toFixed(1)+' s';mTau.textContent=S.tau.toFixed(1)+' s';wheel.setAttribute('aria-valuenow',Math.round(deg)%360);}
+requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+let dd=false;
+function aim(e){const r=wheel.getBoundingClientRect();const x=e.clientX-r.left-r.width/2,y=r.top+r.height/2-e.clientY;if(Math.hypot(x,y)<6)return;S.tgt=Math.atan2(y,x);}
+const hub=document.getElementById('hub');
+function flash(){S.flashes.push({x:S.P.x,y:S.P.y,t:S.t});if(S.flashes.length>8)S.flashes.shift();hub.classList.remove('pop');void hub.getBBox();hub.classList.add('pop');setTimeout(()=>hub.classList.remove('pop'),160);}
+wheel.addEventListener('pointerdown',e=>{const r=wheel.getBoundingClientRect();const x=e.clientX-r.left-r.width/2,y=e.clientY-r.top-r.height/2;e.preventDefault();if(Math.hypot(x,y)<r.width*24/132){flash();return;}dd=true;wheel.setPointerCapture(e.pointerId);aim(e);wheel.style.cursor='grabbing';});
+document.getElementById('fl').onclick=flash;
+wheel.addEventListener('pointermove',e=>{if(dd)aim(e);});
+['pointerup','pointercancel','lostpointercapture'].forEach(ev=>wheel.addEventListener(ev,()=>{dd=false;wheel.style.cursor='grab';}));
+
+const gasEl=document.getElementById('gas'),brkEl=document.getElementById('brk');
+function setPedal(which,v){S[which]=v;(which==='gas'?gasEl:brkEl).classList.toggle('on',v);}
+function pedal(el,which){
+el.addEventListener('pointerdown',e=>{el.setPointerCapture(e.pointerId);setPedal(which,true);e.preventDefault();});
+['pointerup','pointercancel','lostpointercapture'].forEach(ev=>el.addEventListener(ev,()=>setPedal(which,false)));
+el.addEventListener('contextmenu',e=>e.preventDefault());
+el.addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter'){setPedal(which,true);e.preventDefault();}});
+el.addEventListener('keyup',e=>{if(e.key===' '||e.key==='Enter')setPedal(which,false);});
+}
+pedal(gasEl,'gas');pedal(brkEl,'brk');
+function releaseAll(){setPedal('gas',false);setPedal('brk',false);dd=false;}
+window.addEventListener('blur',releaseAll);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)releaseAll();});
+window.addEventListener('keydown',e=>{
+if(e.key==='ArrowUp'){setPedal('gas',true);e.preventDefault();}
+else if(e.key==='ArrowDown'){setPedal('brk',true);e.preventDefault();}
+else if(e.key==='ArrowLeft'){S.tgt+=Math.PI/36;e.preventDefault();}
+else if(e.key==='ArrowRight'){S.tgt-=Math.PI/36;e.preventDefault();}
+else if(e.key==='f'||e.key==='F'){flash();}
+});
+window.addEventListener('keyup',e=>{if(e.key==='ArrowUp')setPedal('gas',false);if(e.key==='ArrowDown')setPedal('brk',false);});
+
+const vG=document.getElementById('vG'),vH=document.getElementById('vH');
+function setView(v){S.view=v;vG.setAttribute('aria-pressed',v==='ground');vH.setAttribute('aria-pressed',v==='his');}
+vG.onclick=()=>setView('ground');vH.onclick=()=>setView('his');
+[['cC','clocks'],['cL','light'],['cY','gyro']].forEach(([id,key])=>{const el=document.getElementById(id);el.onclick=()=>{S[key]=!S[key];el.setAttribute('aria-pressed',S[key]);};});
+const bp=document.getElementById('bp'),bpi=document.getElementById('bpi');
+bp.onclick=()=>{S.run=!S.run;bp.setAttribute('aria-label',S.run?'Pause':'Play');bpi.setAttribute('d',S.run?'M8 5v14M16 5v14':'M7 5l12 7-12 7z');};
+const cB=document.getElementById('cB');
+function setupBarn(){S.P={x:1.5,y:0};S.th=0;S.tgt=0;S.phi=Math.atanh(0.8);S.t=0;S.tau=0;S.psi=0;S.flashes=[];S.ev=null;}
+cB.onclick=()=>{S.barn=!S.barn;cB.setAttribute('aria-pressed',S.barn);if(S.barn)setupBarn();};
+document.getElementById('br').onclick=()=>{S.flashes=[];S.ev=null;if(S.barn){setupBarn();return;}S.phi=0;S.t=0;S.tau=0;S.psi=0;S.P={x:0.5,y:0.5};S.th=S.tgt;};
+})();
+</script>
+</body>
+</html>
